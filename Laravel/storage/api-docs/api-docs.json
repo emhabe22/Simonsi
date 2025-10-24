@@ -6,6 +6,631 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/admin/dashboard": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Menampilkan ringkasan data untuk admin",
+                "operationId": "6c79a34725c8983f76d0b3a1c80a12b4",
+                "responses": {
+                    "200": {
+                        "description": "Data dashboard berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "total_guru": {
+                                            "type": "integer",
+                                            "example": 15
+                                        },
+                                        "total_siswa": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "total_orang_tua": {
+                                            "type": "integer",
+                                            "example": 480
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/absensi": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Menampilkan data absensi semua siswa",
+                "operationId": "7cac0f9fb5c9e1dd3ac4665550e5e87d",
+                "responses": {
+                    "200": {
+                        "description": "Data absensi berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "nama_siswa": {
+                                                "type": "string",
+                                                "example": "Ahmad Rizky"
+                                            },
+                                            "kelas": {
+                                                "type": "string",
+                                                "example": "6A"
+                                            },
+                                            "tanggal": {
+                                                "type": "string",
+                                                "format": "date",
+                                                "example": "2025-10-21"
+                                            },
+                                            "status": {
+                                                "type": "string",
+                                                "example": "Hadir"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/nilai": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Menampilkan data nilai semua siswa",
+                "operationId": "62f52e9ea09f81abff0f84ec65b14d53",
+                "responses": {
+                    "200": {
+                        "description": "Data nilai berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "nama_siswa": {
+                                                "type": "string",
+                                                "example": "Ahmad Rizky"
+                                            },
+                                            "kelas": {
+                                                "type": "string",
+                                                "example": "6A"
+                                            },
+                                            "tahun_akademik": {
+                                                "type": "string",
+                                                "example": "2025/2026"
+                                            },
+                                            "semester": {
+                                                "type": "string",
+                                                "example": "Genap"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/getNilai": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Menampilkan data nilai dari semua mata pelajaran siswa",
+                "operationId": "5fbd0af3f2cc3b17b93bd4ad07b426d7",
+                "responses": {
+                    "200": {
+                        "description": "Data nilai berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "nama_siswa": {
+                                                "type": "string",
+                                                "example": "Ahmad Rizky"
+                                            },
+                                            "kelas": {
+                                                "type": "string",
+                                                "example": "6A"
+                                            },
+                                            "tahun_akademik": {
+                                                "type": "string",
+                                                "example": "2025/2026"
+                                            },
+                                            "semester": {
+                                                "type": "string",
+                                                "example": "Genap"
+                                            },
+                                            "mata_pelajaran": {
+                                                "type": "string",
+                                                "example": "Matematika"
+                                            },
+                                            "nilai": {
+                                                "type": "number",
+                                                "example": 88.5
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/laporan": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Menampilkan seluruh laporan akademik siswa",
+                "operationId": "05310bff6dab267b8cef5b47d852f198",
+                "responses": {
+                    "200": {
+                        "description": "Data laporan akademik berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "nama_siswa": {
+                                                "type": "string",
+                                                "example": "Ahmad Rizky"
+                                            },
+                                            "kelas": {
+                                                "type": "string",
+                                                "example": "6A"
+                                            },
+                                            "tahun_akademik": {
+                                                "type": "string",
+                                                "example": "2025/2026"
+                                            },
+                                            "semester": {
+                                                "type": "string",
+                                                "example": "Genap"
+                                            },
+                                            "nilai": {
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "no": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "mata_pelajaran": {
+                                                            "type": "string",
+                                                            "example": "Matematika"
+                                                        },
+                                                        "nilai": {
+                                                            "type": "number",
+                                                            "example": 90
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "catatan": {
+                                                "type": "string",
+                                                "example": "Sudah siap untuk olimpiade."
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/addGuru": {
+            "post": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Menambahkan data guru baru",
+                "operationId": "2ea51e9426051d9166fa996e3260e270",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nama",
+                                    "email",
+                                    "password",
+                                    "nip"
+                                ],
+                                "properties": {
+                                    "nama": {
+                                        "type": "string",
+                                        "example": "Budi Santoso"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "budi@sekolah.ac.id"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    },
+                                    "nip": {
+                                        "type": "string",
+                                        "example": "19850102 202001 1 001"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Guru berhasil ditambahkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data guru berhasil disimpan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/addSiswa": {
+            "post": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Menambahkan data siswa baru",
+                "operationId": "1247797254875158fed991cdfb062976",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nama",
+                                    "email",
+                                    "password",
+                                    "nis",
+                                    "kelas"
+                                ],
+                                "properties": {
+                                    "nama": {
+                                        "type": "string",
+                                        "example": "Ahmad Rizky"
+                                    },
+                                    "nis": {
+                                        "type": "string",
+                                        "example": "2025001"
+                                    },
+                                    "kelas": {
+                                        "type": "string",
+                                        "example": "6A"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Siswa berhasil ditambahkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data siswa berhasil disimpan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/addOrtu": {
+            "post": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Menambahkan data orang tua baru",
+                "operationId": "91f331db3ce6c94aeb6a2a0df8dbb061",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nama",
+                                    "email",
+                                    "password",
+                                    "no_hp",
+                                    "id_siswa"
+                                ],
+                                "properties": {
+                                    "nama": {
+                                        "type": "string",
+                                        "example": "Siti Nuraini"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "siti@gmail.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    },
+                                    "no_hp": {
+                                        "type": "string",
+                                        "example": "081234567890"
+                                    },
+                                    "id_siswa": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Data orang tua berhasil ditambahkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data orang tua berhasil disimpan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/guru": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Menampilkan daftar semua guru",
+                "operationId": "61018b5b5426d6c49f7a894b7ffe9063",
+                "responses": {
+                    "200": {
+                        "description": "Daftar guru berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "nama": {
+                                                "type": "string",
+                                                "example": "Budi Santoso"
+                                            },
+                                            "email": {
+                                                "type": "string",
+                                                "example": "budi@sekolah.ac.id"
+                                            },
+                                            "nip": {
+                                                "type": "string",
+                                                "example": "19850102 202001 1 001"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/siswa": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Menampilkan daftar semua siswa",
+                "operationId": "27f35b40a74d98ef083f42090d90a448",
+                "responses": {
+                    "200": {
+                        "description": "Daftar siswa berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "nama": {
+                                                "type": "string",
+                                                "example": "Ahmad Rizky"
+                                            },
+                                            "email": {
+                                                "type": "string",
+                                                "example": "rizky@sekolah.ac.id"
+                                            },
+                                            "nis": {
+                                                "type": "string",
+                                                "example": "2025001"
+                                            },
+                                            "kelas": {
+                                                "type": "string",
+                                                "example": "6A"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/ortu": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Menampilkan daftar semua orang tua",
+                "operationId": "5a3bb05c7f2e811172629696f26db7c3",
+                "responses": {
+                    "200": {
+                        "description": "Daftar orang tua berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "nama": {
+                                                "type": "string",
+                                                "example": "Siti Nuraini"
+                                            },
+                                            "email": {
+                                                "type": "string",
+                                                "example": "siti@gmail.com"
+                                            },
+                                            "no_hp": {
+                                                "type": "string",
+                                                "example": "081234567890"
+                                            },
+                                            "nama_siswa": {
+                                                "type": "string",
+                                                "example": "Ahmad Rizky"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/login": {
             "post": {
                 "tags": [
@@ -76,12 +701,498 @@
                     }
                 }
             }
+        },
+        "/api/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout pengguna dan mencabut token akses",
+                "operationId": "79854151e609bd20032aa5aa4d5a35c0",
+                "responses": {
+                    "200": {
+                        "description": "Logout berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logout successful."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Token tidak valid atau sudah kadaluarsa",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/guru/dashboard": {
+            "get": {
+                "tags": [
+                    "Guru"
+                ],
+                "summary": "Menampilkan ringkasan data dashboard guru",
+                "operationId": "4060505cf01c3d4f3b335bc6f15af4cf",
+                "responses": {
+                    "200": {
+                        "description": "Data dashboard berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "nama_guru": {
+                                            "type": "string",
+                                            "example": "Budi Santoso"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "example": "Budi@sdn1.sch.id"
+                                        },
+                                        "kelas": {
+                                            "type": "string",
+                                            "example": "5A"
+                                        },
+                                        "mata_pelajaran": {
+                                            "type": "integer",
+                                            "example": "Matematika"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/guru/absensi/{id}": {
+            "put": {
+                "tags": [
+                    "Guru"
+                ],
+                "summary": "Guru mengedit status absensi siswa",
+                "operationId": "b6d13eb1009b2b1811eb58fcc0e02a1f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID absensi yang ingin diperbarui",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 5
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "status"
+                                ],
+                                "properties": {
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "Hadir",
+                                            "Sakit",
+                                            "Izin",
+                                            "Kosong"
+                                        ],
+                                        "example": "Sakit"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Absensi berhasil diperbarui",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Absensi berhasil diperbarui."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 5
+                                                },
+                                                "id_siswa": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "tanggal": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2025-10-21"
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "Sakit"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Data absensi tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/guru/siswa-nilai": {
+            "get": {
+                "tags": [
+                    "Guru"
+                ],
+                "summary": "Menampilkan daftar siswa di dalam kelas yang diampu oleh guru",
+                "operationId": "8ee171a08296e31a86c6f9e0385f39bc",
+                "responses": {
+                    "200": {
+                        "description": "Daftar siswa dan nama orang tua berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id_siswa": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "nama_siswa": {
+                                                "type": "string",
+                                                "example": "Alice"
+                                            },
+                                            "nama_ortu": {
+                                                "type": "string",
+                                                "example": "Joko Susilo"
+                                            },
+                                            "kelas": {
+                                                "type": "string",
+                                                "example": "6A"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/guru/nilai-siswa": {
+            "get": {
+                "tags": [
+                    "Guru"
+                ],
+                "summary": "Menampilkan daftar nilai siswa berdasarkan tahun akademik dan semester",
+                "operationId": "e1c5b0fc0aa92aa9b106906daf6d1891",
+                "responses": {
+                    "200": {
+                        "description": "Data nilai siswa berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "nama_siswa": {
+                                            "type": "string",
+                                            "example": "Michael Joko Nurcipto"
+                                        },
+                                        "tahun_akademik": {
+                                            "type": "string",
+                                            "example": "2025/2026"
+                                        },
+                                        "semester": {
+                                            "type": "string",
+                                            "example": "Genap"
+                                        },
+                                        "nilai": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "no": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "mata_pelajaran": {
+                                                        "type": "string",
+                                                        "example": "Matematika"
+                                                    },
+                                                    "nilai": {
+                                                        "type": "number",
+                                                        "example": 90
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/guru/nilai": {
+            "post": {
+                "tags": [
+                    "Guru"
+                ],
+                "summary": "Guru menginput nilai lengkap untuk siswa (Proses, UTS, UAS, dan Catatan)",
+                "operationId": "699cf948d7135647259a6701afb98622",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id_siswa",
+                                    "kelas",
+                                    "proses_1",
+                                    "proses_2",
+                                    "proses_3",
+                                    "proses_4",
+                                    "uts",
+                                    "uas"
+                                ],
+                                "properties": {
+                                    "id_siswa": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "kelas": {
+                                        "type": "string",
+                                        "example": "6A"
+                                    },
+                                    "proses_1": {
+                                        "type": "number",
+                                        "example": 85
+                                    },
+                                    "proses_2": {
+                                        "type": "number",
+                                        "example": 87
+                                    },
+                                    "uts": {
+                                        "type": "number",
+                                        "example": 90
+                                    },
+                                    "proses_3": {
+                                        "type": "number",
+                                        "example": 88
+                                    },
+                                    "proses_4": {
+                                        "type": "number",
+                                        "example": 89
+                                    },
+                                    "uas": {
+                                        "type": "number",
+                                        "example": 93
+                                    },
+                                    "catatan": {
+                                        "type": "string",
+                                        "example": "Aktif, perlu peningkatan di UTS"
+                                    },
+                                    "semester": {
+                                        "type": "string",
+                                        "example": "Genap"
+                                    },
+                                    "tahun_akademik": {
+                                        "type": "string",
+                                        "example": "2025/2026"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Nilai siswa berhasil disimpan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Nilai siswa berhasil disimpan."
+                                        },
+                                        "rata_rata": {
+                                            "type": "number",
+                                            "example": 88.7
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/guru/laporan-akademik": {
+            "get": {
+                "tags": [
+                    "Guru"
+                ],
+                "summary": "Menampilkan laporan akademik siswa berdasarkan kelas, tahun akademik, dan semester",
+                "operationId": "acd35484689f679fb61e1f6ed0929fec",
+                "responses": {
+                    "200": {
+                        "description": "Laporan akademik berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "kelas": {
+                                            "type": "string",
+                                            "example": "6A"
+                                        },
+                                        "nama_siswa": {
+                                            "type": "string",
+                                            "example": "Michael Joko Nurcipto"
+                                        },
+                                        "tahun_akademik": {
+                                            "type": "string",
+                                            "example": "2025/2026"
+                                        },
+                                        "semester": {
+                                            "type": "string",
+                                            "example": "Genap"
+                                        },
+                                        "nilai": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "no": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "mata_pelajaran": {
+                                                        "type": "string",
+                                                        "example": "Matematika"
+                                                    },
+                                                    "nilai": {
+                                                        "type": "number",
+                                                        "example": 90
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "catatan": {
+                                            "type": "string",
+                                            "example": "Siswa aktif dan berprestasi di bidang olahraga."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "tags": [
         {
+            "name": "Admin",
+            "description": "Admin"
+        },
+        {
             "name": "Auth",
             "description": "Auth"
+        },
+        {
+            "name": "Guru",
+            "description": "Guru"
         }
     ]
 }

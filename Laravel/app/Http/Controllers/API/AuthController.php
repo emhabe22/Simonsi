@@ -19,7 +19,8 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
-     /**
+    //Login Method
+    /**
      * @OA\Post(
      *     path="/api/login",
      *     summary="Login pengguna untuk mendapatkan token akses",
@@ -49,8 +50,7 @@ class AuthController extends Controller
      *     )
      * )
      */
-
-     public function login(Request $request)
+    public function login(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
@@ -63,7 +63,6 @@ class AuthController extends Controller
             return response()->json(['message' => 'Invalid credentials.'], 401);
         }
 
-        // Token sederhana (nanti bisa diganti JWT)
         $token = base64_encode($user->email . '|' . now());
 
         return response()->json([
@@ -71,4 +70,32 @@ class AuthController extends Controller
             'token' => $token
         ], 200);
     }
+
+    /**
+     * @OA\Post(
+     *     path="/api/logout",
+     *     summary="Logout pengguna dan mencabut token akses",
+     *     tags={"Auth"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Logout berhasil",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Logout successful.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Token tidak valid atau sudah kadaluarsa",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
+     *     )
+     * )
+     */
+    public function logout(Request $request)
+    {
+        return response()->json(['message' => 'Logout successful.']);
+    }
 }
+
