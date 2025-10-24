@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('ortus', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('phone')->unique();
+            $table->text('address');
+            $table->enum('gender', ['male', 'female']);
+            $table->date('date_of_birth');
+            $table->foreignId('siswa_id')->constrained('siswas')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });
     }
