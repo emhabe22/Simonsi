@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('address');
             $table->enum('gender', ['male', 'female']);
             $table->date('date_of_birth');
+            $table->foreignId('kelas_id')->constrained('kelas')->onDelete('cascade');
             $table->timestamps();
         });
     }

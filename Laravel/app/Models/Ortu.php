@@ -6,5 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Ortu extends Model
 {
-    //
+    protected $guarded = [];
+    
+     public function user () {
+        return $this->belongsTo(User::class,'user_id','id');
+    }
+
+    public function siswa () {
+        return $this->hasMany(Siswa::class,'siswa_id','id');
+    }
 }

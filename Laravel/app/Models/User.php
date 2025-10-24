@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Guru;
 
 class User extends Authenticatable
 {
@@ -46,4 +47,13 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function guru () {
+        return $this->hasMany(Guru::class, 'user_id','id');
+    }
+   
+    public function ortu () {
+        return $this->hasMany(Ortu::class, 'user_id','id');
+    }
+
 }
