@@ -41,3 +41,4 @@ Route::put('/guru/absensi/{id}', [GuruController::class, 'updateAbsensi'])->midd
 // POST Routes
 Route::post('/guru/nilai', [GuruController::class, 'inputNilai'])->middleware('auth:api');
 
+
