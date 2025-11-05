@@ -25,13 +25,21 @@ Route::prefix('admin')->group(function () {
     Route::get('/data_siswa', [AdminController::class, 'data_siswa'])->name('admin.data_siswa');
     Route::get('/data_kelas', [AdminController::class, 'data_kelas'])->name('admin.data_kelas');
     Route::get('/data_mapel', [AdminController::class, 'data_mapel'])->name('admin.data_mapel');
-    Route::get('/data_akademik', [AdminController::class, 'data_akademik'])->name('admin.data_akademik'); // ✅ diperbaiki
+    Route::get('/data_akademik', [AdminController::class, 'data_akademik'])->name('admin.data_akademik');
     Route::get('/tambah_guru', [AdminController::class, 'tambah_guru'])->name('admin.tambah_guru');
     Route::get('/tambah_orangtua', [AdminController::class, 'tambah_orangtua'])->name('admin.tambah_orangtua');
     Route::get('/tambah_siswa', [AdminController::class, 'tambah_siswa'])->name('admin.tambah_siswa');
     Route::get('/tambah_kelas', [AdminController::class, 'tambah_kelas'])->name('admin.tambah_kelas');
     Route::get('/tambah_mapel', [AdminController::class, 'tambah_mapel'])->name('admin.tambah_mapel');
     Route::get('/tambah_akademik', [AdminController::class, 'tambah_akademik'])->name('admin.tambah_akademik');
+    Route::put('/guru/{id}', [AdminController::class, 'update_guru'])->name('admin.update_guru');
+    Route::get('/guru/{id}/edit', [AdminController::class, 'edit_guru'])->name('admin.edit_guru');
+    Route::get('/orangtua/{id}/edit', [AdminController::class, 'edit_orangtua'])->name('admin.edit_orangtua');
+    Route::put('/orangtua/{id}', [AdminController::class, 'update_orangtua'])->name('admin.update_orangtua');
+    Route::get('/kelas/{id}/edit', [AdminController::class, 'edit_kelas'])->name('admin.edit_kelas');
+    Route::put('/kelas/{id}', [AdminController::class, 'update_kelas'])->name('admin.update_kelas');
+    Route::get('/admin/edit_mapel/{id}', [AdminController::class, 'edit_mapel'])->name('admin.edit_mapel');
+    Route::put('/admin/update_mapel/{id}', [AdminController::class, 'update_mapel'])->name('admin.update_mapel');
 });
 
 Route::prefix('guru')->group(function () {

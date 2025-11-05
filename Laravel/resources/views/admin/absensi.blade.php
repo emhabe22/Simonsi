@@ -84,6 +84,9 @@
         border-radius: 4px;
         font-size: 14px;
     }
+    .status-group input[type="checkbox"] {
+    accent-color: #3498db;
+}
 
     .button-group {
         display: flex;

@@ -36,9 +36,10 @@
           <td style="padding:10px;">{{ $guru->kelas }}</td>
           <td style="padding:10px;">
             <!-- Tombol aksi dummy -->
-            <a href="#" class="btn btn-primary btn-sm ms-2">
-              <i class="fa fa-pen"></i> Edit
-            </a>
+<a href="{{ route('admin.edit_guru', $guru->id) }}" class="btn btn-primary btn-sm ms-2">
+  <i class="fa fa-pen"></i> Edit
+</a>
+
             <a href="#" class="btn btn-danger btn-sm ms-2" >
               <i class="fa fa-trash"></i> Hapus
             </a>

@@ -29,7 +29,7 @@
           <td style="padding:10px;">{{ $kelas->kelas }}</td>
           <td style="padding:10px;">{{ $kelas->subclass }}</td>
           <td style="padding:10px;">
-            <a href="#" class="btn btn-primary btn-sm ms-2">
+            <a href="{{ route('admin.edit_kelas', $kelas->id) }}" class="btn btn-primary btn-sm ms-2">
               <i class="fa fa-pen"></i> Edit
             </a>
             <a href="#" class="btn btn-danger btn-sm ms-2">
