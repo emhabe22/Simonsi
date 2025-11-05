@@ -1160,7 +1160,7 @@
                                                         "type": "string",
                                                         "example": "Matematika"
                                                     },
-                                                    "nilai": {
+                                                 "nilai": {
                                                         "type": "number",
                                                         "example": 90
                                                     }
