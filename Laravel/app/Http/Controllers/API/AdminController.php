@@ -12,7 +12,6 @@ use App\Models\Ortu;
 use App\Models\Guru;
 
 
-
 class AdminController extends Controller
 {
     //Dashboard 
@@ -39,10 +38,13 @@ class AdminController extends Controller
  */
 public function dashboard()
 {
+    $totalGuru = Guru::count();
+    $totalSiswa = Siswa::count();
+    $totalOrtu = Ortu::count();
     return response()->json([
-        'total_guru' => 15,
-        'total_siswa' => 200,
-        'total_orang_tua' => 480,
+        'total_guru' => $totalGuru,
+        'total_siswa' => $totalSiswa,
+        'total_orang_tua' => $totalOrtu,
     ]);
 }
 
@@ -74,7 +76,6 @@ public function dashboard()
  */
 public function absensi()
 {
-    // Contoh data dummy, nanti diganti dari model Absensi
     $data = [
         [
             'nama_siswa' => 'Ahmad Rizky',
@@ -306,7 +307,7 @@ public function addGuru(Request $request)
         'role' => 'guru'
     ]);
     Guru::create([
-        'id_user' => $user->id,
+        'user_id' => $user->id,
         'nip' => $request->nip
     ]);
 
@@ -324,17 +325,19 @@ public function addGuru(Request $request)
  *     @OA\RequestBody(
  *         required=true,
  *         @OA\JsonContent(
- *             required={"nama","email","password","nis","kelas"},
- *             @OA\Property(property="nama", type="string", example="Ahmad Rizky"),
- *             @OA\Property(property="nis", type="string", example="2025001"),
- *             @OA\Property(property="kelas", type="string", example="6A")
+ *             required={"name","nisn","address","gender","date_of_birth"},
+ *             @OA\Property(property="name", type="string", example="Ahmad Rizky"),
+ *            @OA\Property(property="address", type="string", example="Jl. Merpati No. 10, Jakarta"),
+ *             @OA\Property(property="nisn", type="string", example="2025001"),
+ *            @OA\Property(property="gender", type="string", example="male"),
+ *            @OA\Property(property="date_of_birth", type="string", format="date", example="2015-08-15"),
  *         )
  *     ),
  *     @OA\Response(
  *         response=201,
  *         description="Siswa berhasil ditambahkan",
  *         @OA\JsonContent(
- *             @OA\Property(property="message", type="string", example="Data siswa berhasil disimpan.")
+ *           @OA\Property(property="message", type="string", example="Data siswa berhasil disimpan.")
  *         )
  *     )
  * )
@@ -342,17 +345,20 @@ public function addGuru(Request $request)
 public function addSiswa(Request $request)
 {
     $request->validate([
-        'nama' => 'required|string',
-        'nis' => 'required|string|unique:siswa',
-        'kelas' => 'required|string',
-        'id_orang_tua' => 'nullable|exists:users,id',
+        'name' => 'required|string',
+        'nisn' => 'required|string|unique:siswas',
+        'address'=> 'required|string',
+        'gender' => 'required|in:male,female',
+        'date_of_birth' => 'required|date',
     ]);
 
     Siswa::create([
-        'nama' => $request->nama,
-        'nis' => $request->nis,
-        'kelas' => $request->kelas,
-        'id_orang_tua' => $request->id_orang_tua,
+        'name' => $request->name,
+        'nisn' => $request->nisn,
+        'address' => $request->address,
+        'gender' => $request->gender,
+        'date_of_birth' => $request->date_of_birth, 
+        'kelas_id' => 1, // Default kelas_id for simplicity
     ]);
 
     return response()->json(['message' => 'Data siswa berhasil disimpan.'], 201);
@@ -392,8 +398,8 @@ public function addOrtu(Request $request)
         'nama' => 'required|string',
         'email' => 'required|email|unique:users',
         'password' => 'required|string|min:6',
-        'no_hp' => 'required|string',
-        'id_siswa' => 'required|exists:siswa,id'
+        'phone' => 'required|string',
+        'siswa_id' => 'required|exists:siswa,id'
     ]);
 
     $user = User::create([
@@ -404,9 +410,9 @@ public function addOrtu(Request $request)
     ]);
 
     Ortu::create([
-        'id_user' => $user->id,
-        'id_siswa' => $request->id_siswa,
-        'no_hp' => $request->no_hp
+        'user_id' => $user->id,
+        'siswa_id' => $request->id_siswa,
+        'phone' => $request->phone
     ]);
 
     return response()->json(['message' => 'Data orang tua berhasil disimpan.'], 201);
@@ -443,13 +449,13 @@ public function addOrtu(Request $request)
  */
 public function getGuru()
 {
-    $guru = Guru::with('user:id,nama,email')
-        ->select('id', 'id_user', 'nip')
+    $guru = Guru::with('user:id,name,email')
+        ->select('id', 'user_id', 'nip')
         ->get()
         ->map(function ($g) {
             return [
                 'id' => $g->id,
-                'nama' => $g->user->nama,
+                'name' => $g->user->name,
                 'email' => $g->user->email,
                 'nip' => $g->nip
             ];
@@ -471,9 +477,9 @@ public function getGuru()
  *             type="array",
  *             @OA\Items(
  *                 @OA\Property(property="id", type="integer", example=1),
- *                 @OA\Property(property="nama", type="string", example="Ahmad Rizky"),
+ *                 @OA\Property(property="name", type="string", example="Ahmad Rizky"),
  *                 @OA\Property(property="email", type="string", example="rizky@sekolah.ac.id"),
- *                 @OA\Property(property="nis", type="string", example="2025001"),
+ *                 @OA\Property(property="nisn", type="string", example="2025001"),
  *                 @OA\Property(property="kelas", type="string", example="6A")
  *             )
  *         )
@@ -482,15 +488,15 @@ public function getGuru()
  */
 public function getSiswa()
 {
-    $siswa = Siswa::with('user:id,nama,email')
-        ->select('id', 'id_user', 'nis', 'kelas')
+    $siswa = Siswa::with('user:id,name,email')
+        ->select('id', 'user_id', 'nisn', 'kelas')
         ->get()
         ->map(function ($s) {
             return [
                 'id' => $s->id,
-                'nama' => $s->user->nama,
+                'name' => $s->user->name,
                 'email' => $s->user->email,
-                'nis' => $s->nis,
+                'nisn' => $s->nisn,
                 'kelas' => $s->kelas
             ];
         });
@@ -511,9 +517,9 @@ public function getSiswa()
  *             type="array",
  *             @OA\Items(
  *                 @OA\Property(property="id", type="integer", example=1),
- *                 @OA\Property(property="nama", type="string", example="Siti Nuraini"),
+ *                 @OA\Property(property="name", type="string", example="Siti Nuraini"),
  *                 @OA\Property(property="email", type="string", example="siti@gmail.com"),
- *                 @OA\Property(property="no_hp", type="string", example="081234567890"),
+ *                 @OA\Property(property="phone", type="string", example="081234567890"),
  *                 @OA\Property(property="nama_siswa", type="string", example="Ahmad Rizky")
  *             )
  *         )
@@ -523,14 +529,14 @@ public function getSiswa()
 public function getOrtu()
 {
     $ortu = Ortu::with(['user:id,nama,email', 'siswa.user:id,nama'])
-        ->select('id', 'id_user', 'id_siswa', 'no_hp')
+        ->select('id', 'user_id', 'siswa_id', 'phone')
         ->get()
         ->map(function ($o) {
             return [
                 'id' => $o->id,
                 'nama' => $o->user->nama,
                 'email' => $o->user->email,
-                'no_hp' => $o->no_hp,
+                'phone' => $o->phone,
                 'nama_siswa' => $o->siswa->user->nama ?? null
             ];
         });

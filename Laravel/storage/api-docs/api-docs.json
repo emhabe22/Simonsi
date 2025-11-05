@@ -361,24 +361,33 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "nama",
-                                    "email",
-                                    "password",
-                                    "nis",
-                                    "kelas"
+                                    "name",
+                                    "nisn",
+                                    "address",
+                                    "gender",
+                                    "date_of_birth"
                                 ],
                                 "properties": {
-                                    "nama": {
+                                    "name": {
                                         "type": "string",
                                         "example": "Ahmad Rizky"
                                     },
-                                    "nis": {
+                                    "address": {
+                                        "type": "string",
+                                        "example": "Jl. Merpati No. 10, Jakarta"
+                                    },
+                                    "nisn": {
                                         "type": "string",
                                         "example": "2025001"
                                     },
-                                    "kelas": {
+                                    "gender": {
                                         "type": "string",
-                                        "example": "6A"
+                                        "example": "male"
+                                    },
+                                    "date_of_birth": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2015-08-15"
                                     }
                                 },
                                 "type": "object"
@@ -549,7 +558,7 @@
                                                 "type": "integer",
                                                 "example": 1
                                             },
-                                            "nama": {
+                                            "name": {
                                                 "type": "string",
                                                 "example": "Ahmad Rizky"
                                             },
@@ -557,7 +566,7 @@
                                                 "type": "string",
                                                 "example": "rizky@sekolah.ac.id"
                                             },
-                                            "nis": {
+                                            "nisn": {
                                                 "type": "string",
                                                 "example": "2025001"
                                             },
@@ -600,7 +609,7 @@
                                                 "type": "integer",
                                                 "example": 1
                                             },
-                                            "nama": {
+                                            "name": {
                                                 "type": "string",
                                                 "example": "Siti Nuraini"
                                             },
@@ -608,7 +617,7 @@
                                                 "type": "string",
                                                 "example": "siti@gmail.com"
                                             },
-                                            "no_hp": {
+                                            "phone": {
                                                 "type": "string",
                                                 "example": "081234567890"
                                             },
@@ -1178,6 +1187,15 @@
                         "bearerAuth": []
                     }
                 ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
             }
         }
     },

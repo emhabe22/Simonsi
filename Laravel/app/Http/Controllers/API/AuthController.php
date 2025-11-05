@@ -15,7 +15,14 @@ use App\Models\User;
  *     version="1.0.0",
  *     description="API untuk monitoring belajar dan absensi siswa"
  * )
+ *  @OA\SecurityScheme(
+ *     securityScheme="bearerAuth",
+ *     type="http",
+ *     scheme="bearer",
+ *     bearerFormat="JWT"
+ * )
  */
+
 
 class AuthController extends Controller
 {
@@ -50,26 +57,33 @@ class AuthController extends Controller
      *     )
      * )
      */
-    public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string',
-        ]);
+   public function login(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required|string',
+    ]);
 
-        $user = User::where('email', $request->email)->first();
+    $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['message' => 'Invalid credentials.'], 401);
-        }
-
-        $token = base64_encode($user->email . '|' . now());
-
-        return response()->json([
-            'message' => 'Login successful.',
-            'token' => $token
-        ], 200);
+    if (!$user || !Hash::check($request->password, $user->password)) {
+        return response()->json(['message' => 'Invalid credentials.'], 401);
     }
+
+    $token = base64_encode($user->email . '|' . now());
+
+    return response()->json([
+        'message' => 'Login successful.',
+        'token' => $token,
+        'user' => [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'role' => $user->role
+        ]
+    ], 200);
+}
+
 
     /**
      * @OA\Post(
