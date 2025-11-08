@@ -38,8 +38,22 @@ Route::prefix('admin')->group(function () {
     Route::put('/orangtua/{id}', [AdminController::class, 'update_orangtua'])->name('admin.update_orangtua');
     Route::get('/kelas/{id}/edit', [AdminController::class, 'edit_kelas'])->name('admin.edit_kelas');
     Route::put('/kelas/{id}', [AdminController::class, 'update_kelas'])->name('admin.update_kelas');
-    Route::get('/admin/edit_mapel/{id}', [AdminController::class, 'edit_mapel'])->name('admin.edit_mapel');
-    Route::put('/admin/update_mapel/{id}', [AdminController::class, 'update_mapel'])->name('admin.update_mapel');
+    Route::get('/edit_mapel/{id}', [AdminController::class, 'edit_mapel'])->name('admin.edit_mapel');
+    Route::put('/update_mapel/{id}', [AdminController::class, 'update_mapel'])->name('admin.update_mapel');
+    Route::post('/akademik/simpan', [AdminController::class, 'simpan_akademik'])->name('admin.simpan_akademik');
+    Route::delete('/akademik/{id}', [AdminController::class, 'hapus_akademik'])->name('admin.hapus_akademik');
+    Route::post('/kelas/simpan', [AdminController::class, 'simpan_kelas'])->name('admin.simpan_kelas');
+    Route::delete('/kelas/{id}', [AdminController::class, 'hapus_kelas'])->name('admin.hapus_kelas');
+    Route::post('/mapel/simpan', [AdminController::class, 'simpan_mapel'])->name('admin.simpan_mapel');
+    Route::delete('/mapel/{id}', [AdminController::class, 'hapus_mapel'])->name('admin.hapus_mapel');
+    Route::post('/siswa/simpan', [AdminController::class, 'simpan_siswa'])->name('admin.simpan_siswa');
+    Route::get('/siswa/edit/{id}', [AdminController::class, 'edit_siswa'])->name('admin.edit_siswa');
+    Route::put('/siswa/update/{id}', [AdminController::class, 'update_siswa'])->name('admin.update_siswa');
+    Route::delete('/siswa/{id}', [AdminController::class, 'hapus_siswa'])->name('admin.hapus_siswa');
+    Route::post('/orangtua/simpan', [AdminController::class, 'simpan_orangtua'])->name('admin.simpan_orangtua');
+    Route::delete('/orangtua/{id}', [AdminController::class, 'hapus_orangtua'])->name('admin.hapus_orangtua');
+    Route::get('/orangtua/edit/{id}', [AdminController::class, 'edit_orangtua'])->name('admin.edit_orangtua');
+    Route::put('/orangtua/update/{id}', [AdminController::class, 'update_orangtua'])->name('admin.update_orangtua');
 });
 
 Route::prefix('guru')->group(function () {

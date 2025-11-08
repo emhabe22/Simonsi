@@ -7,7 +7,7 @@
   <h2>Tambah Data Tahun Akademik</h2>
   <div class="card">
 
-    <form action="#" method="POST">
+    <form action="{{ route('admin.simpan_akademik') }}" method="POST">
       @csrf
 
       <div class="form-group mb-2">

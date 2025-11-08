@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('siswas', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->integer('nisn')->unique();
+            $table->string('nisn', 20)->unique(); // 🔄 ubah dari integer ke string
             $table->text('address');
             $table->enum('gender', ['male', 'female']);
             $table->date('date_of_birth');
