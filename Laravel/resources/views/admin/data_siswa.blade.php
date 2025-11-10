@@ -3,14 +3,6 @@
 @section('title', 'Data Siswa - EDUTRACK')
 
 @section('content')
-<style>
-  th, td {
-    text-align: center !important;
-    vertical-align: middle !important;
-  }
-
-
-</style>
 
 <div class="content">
   <h2 class="page-title">Data Siswa</h2>
@@ -48,7 +40,7 @@
             {{ $siswa->kelas ? $siswa->kelas->class . ' ' . $siswa->kelas->subclass : '-' }}
           </td>
           <td style="padding:10px;">{{ $siswa->address }}</td>
-          <td style="padding:10px;">{{ $siswa->date_of_birth }}</td>
+          <td style="padding:10px;">{{ \Carbon\Carbon::parse($siswa->date_of_birth)->format('d-m-Y') }}</td>
           <td style="padding:10px;">
             {{ $siswa->gender == 'male' ? 'Laki-laki' : 'Perempuan' }}
           </td>

@@ -6,30 +6,28 @@
 <div class="content">
   <h2>Edit Data Orang Tua</h2>
   <div class="card p-4 shadow-sm">
-
     <form action="{{ route('admin.update_orangtua', $orangtua->id) }}" method="POST">
       @csrf
       @method('PUT')
 
       <div class="form-group mb-3">
         <label for="name">Nama Orang Tua</label>
-        <input type="text" name="name" id="name" 
-               class="form-control" 
-               value="{{ old('name', $orangtua->name) }}" required>
+        <input type="text" name="name" id="name" class="form-control" value="{{ old('name', $orangtua->name) }}" required>
       </div>
 
       <div class="form-group mb-3">
         <label for="phone">Nomor Telepon</label>
-        <input type="text" name="phone" id="phone" 
-               class="form-control" 
-               value="{{ old('phone', $orangtua->phone) }}" required>
+        <input type="text" name="phone" id="phone" class="form-control" value="{{ old('phone', $orangtua->phone) }}" required>
       </div>
 
       <div class="form-group mb-3">
         <label for="address">Alamat</label>
-        <input type="text" name="address" id="address" 
-               class="form-control" 
-               value="{{ old('address', $orangtua->address) }}" required>
+        <input type="text" name="address" id="address" class="form-control" value="{{ old('address', $orangtua->address) }}" required>
+      </div>
+
+      <div class="form-group mb-2">
+        <label for="lahir">Tanggal Lahir</label>
+        <input type="date" id="lahir" name="date_of_birth" value="{{ old('date_of_birth', $orangtua->date_of_birth) }}" required class="form-control">
       </div>
 
       <div class="form-group mb-3">
@@ -46,9 +44,7 @@
         <select name="siswa_id" id="siswa_id" class="form-control" required>
           <option value="">-- Pilih Anak --</option>
           @foreach($siswaList as $siswa)
-            <option value="{{ $siswa->id }}" {{ old('siswa_id', $orangtua->siswa_id) == $siswa->id ? 'selected' : '' }}>
-              {{ $siswa->name }}
-            </option>
+            <option value="{{ $siswa->id }}" {{ old('siswa_id', $orangtua->siswa_id) == $siswa->id ? 'selected' : '' }}>{{ $siswa->name }}</option>
           @endforeach
         </select>
       </div>

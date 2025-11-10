@@ -25,28 +25,31 @@
             </thead>
             <tbody>
                 @foreach($mapelList as $index => $mapel)
-                <tr>
-                    <td style="padding:10px;">{{ $index + 1 }}</td>
-                    <td style="padding:10px;">{{ $mapel->name }}</td>
-<td style="padding:10px;">
-    {{ $mapel->kelas ? 'Kelas ' . $mapel->kelas->class : '-' }}
-</td>
+                    <tr>
+                        <td style="padding:10px;">{{ $index + 1 }}</td>
+                        <td style="padding:10px;">{{ $mapel->name }}</td>
+                        <td style="padding:10px;">
+                            {{ $mapel->kelas ? 'Kelas ' . $mapel->kelas->class : '-' }}
+                        </td>
+                        <td style="padding:10px;">
+                            <a href="{{ route('admin.edit_mapel', $mapel->id) }}" class="btn btn-primary btn-sm ms-2">
+                                <i class="fa fa-pen"></i> Edit
+                            </a>
 
-
-                    <td style="padding:10px;">
-                        <a href="{{ route('admin.edit_mapel', $mapel->id) }}" class="btn btn-primary btn-sm ms-2">
-                            <i class="fa fa-pen"></i> Edit
-                        </a>
-
-                        <form id="delete-form-{{ $mapel->id }}" action="{{ route('admin.hapus_mapel', $mapel->id) }}" method="POST" style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="button" class="btn btn-danger btn-sm ms-2" onclick="confirmDelete({{ $mapel->id }})">
-                                <i class="fa fa-trash"></i> Hapus
-                            </button>
-                        </form>
-                    </td>
-                </tr>
+                            <form id="delete-form-{{ $mapel->id }}"
+                                  action="{{ route('admin.hapus_mapel', $mapel->id) }}"
+                                  method="POST"
+                                  style="display:inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="button"
+                                        class="btn btn-danger btn-sm ms-2"
+                                        onclick="confirmDelete({{ $mapel->id }})">
+                                    <i class="fa fa-trash"></i> Hapus
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
                 @endforeach
             </tbody>
         </table>
@@ -55,5 +58,4 @@
 
 {{-- Include SweetAlert --}}
 @include('admin.components.sweetalert')
-
 @endsection

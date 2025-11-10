@@ -29,7 +29,6 @@
           <td style="padding:10px;">{{ $index + 1 }}</td>
           <td style="padding:10px;">{{ $tahun->id_tahun }}</td>
           <td style="padding:10px; ;">
-  
 
             {{-- Tombol Hapus --}}
             <form id="delete-form-{{ $tahun->id }}" 

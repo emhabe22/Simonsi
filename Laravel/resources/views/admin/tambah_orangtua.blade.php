@@ -26,6 +26,11 @@
       </div>
 
       <div class="form-group mb-2">
+        <label for="lahir">Tanggal Lahir</label>
+        <input type="date" id="lahir" name="date_of_birth" value="{{ old('date_of_birth') }}" required class="form-control">
+    </div>
+
+      <div class="form-group mb-2">
         <label for="address">Alamat</label>
         <textarea id="address" name="address" class="form-control" required placeholder="Masukkan alamat"></textarea>
       </div>
