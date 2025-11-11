@@ -44,8 +44,8 @@ Route::put('/guru/absensi/{id}', [GuruController::class, 'updateAbsensi']);
 Route::post('/guru/nilai', [GuruController::class, 'inputNilai']);
 
 // ==================== ORTU ROUTES ====================
-Route::get('/ortu/dashboard', [OrtuController::class, 'dashboard']);
-Route::get('/ortu/laporan', [OrtuController::class, 'laporanAkademik']);
-Route::get('/ortu/nilai-anak', [OrtuController::class, 'getNilaiAnak']);
+Route::get('/orangtua/dashboard', [OrtuController::class, 'dashboard']);
+Route::get('/orangtua/laporan', [OrtuController::class, 'laporanAkademik']);
+Route::get('/orangtua/nilai-anak', [OrtuController::class, 'getNilaiAnak']);
 
 

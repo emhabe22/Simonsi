@@ -81,7 +81,7 @@ public function dashboard()
  *     )
  * )
  */
-public function laporan()
+public function laporanAkademik()
 {
     $orangtua = Auth::user();
 
