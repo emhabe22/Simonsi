@@ -9,15 +9,15 @@
 <div class="dashboard-cards">
     <div class="dashboard-card">
         <h3>Total Guru</h3>
-        <div class="number">{{ $totalGuru ?? 15 }}</div>
+        <div class="number">{{ $totalGuru}}</div>
     </div>
     <div class="dashboard-card">
         <h3>Total Orang Tua</h3>
-        <div class="number">{{ $totalOrangTua ?? 185 }}</div>
+        <div class="number">{{ $totalOrangTua}}</div>
     </div>
     <div class="dashboard-card">
         <h3>Total Siswa</h3>
-        <div class="number">{{ $totalSiswa ?? 213 }}</div>
+        <div class="number">{{ $totalSiswa}}</div>
     </div>
 </div>
 

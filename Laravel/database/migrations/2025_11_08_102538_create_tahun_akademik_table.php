@@ -9,27 +9,20 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-
     public function up(): void
     {
-        Schema::create('kelas', function (Blueprint $table) {
+        Schema::create('tahun_akademik', function (Blueprint $table) {
             $table->id();
-            $table->integer('class');
-<<<<<<< HEAD
-            $table->enum('sub-class', ['A', 'B', 'C', 'D', 'E']);
-=======
-            $table->enum('subclass', ['A', 'B', 'C', 'D', 'E']);
->>>>>>> 991cfc9866acba36e7f3ccd90706c4d4c78fa704
+            $table->string('id_tahun')->unique();
             $table->timestamps();
         });
     }
-
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('kelas');
+        Schema::dropIfExists('tahun_akademik');
     }
 };

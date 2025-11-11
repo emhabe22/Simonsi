@@ -5,35 +5,63 @@
 @section('content')
 <div class="content">
   <h2>Tambah Data Guru</h2>
-  <div class="card">
-
-    <form action="#" method="POST">
+  <div class="card p-4 shadow-sm">
+    <form action="{{ route('admin.simpan_guru') }}" method="POST">
       @csrf
 
       <div class="form-group mb-2">
         <label for="nama">Nama Guru</label>
-        <input type="text" id="nama" name="nama" placeholder="Masukkan nama guru" required class="text-input">
+        <input type="text" id="nama" name="name" placeholder="Masukkan nama guru" value="{{ old('name') }}" required class="form-control">
       </div>
 
       <div class="form-group mb-2">
-        <label for="mapel">Mata Pelajaran</label>
-        <input type="text" id="mapel" name="mapel" placeholder="Masukkan mata pelajaran" required class="text-input">
+        <label for="lahir">Tanggal Lahir</label>
+        <input type="date" id="lahir" name="date_of_birth" value="{{ old('date_of_birth') }}" required class="form-control">
+      </div>
+
+      <div class="form-group mb-2">
+        <label for="address">Alamat</label>
+        <textarea id="address" name="address" rows="2" placeholder="Masukkan alamat guru" required class="form-control">{{ old('address') }}</textarea>
       </div>
 
       <div class="form-group mb-2">
         <label for="nip">NIP</label>
-        <input type="text" id="nip" name="nip" placeholder="Masukkan NIP" required class="text-input">
+        <input type="text" id="nip" name="nip" placeholder="Masukkan NIP" value="{{ old('nip') }}" required class="form-control">
+      </div>
+
+      <div class="form-group mb-2">
+        <label for="mapel">Mata Pelajaran</label>
+        <select id="mapel" name="mapel_id" class="form-control" required>
+          <option value="">-- Pilih Mata Pelajaran --</option>
+          @foreach($mapelList as $mapel)
+            <option value="{{ $mapel->id }}">{{ $mapel->name }}</option>
+          @endforeach
+        </select>
       </div>
 
       <div class="form-group mb-2">
         <label for="kelas">Kelas</label>
-        <input type="text" id="kelas" name="kelas" placeholder="Contoh: Kelas 1A" required class="text-input">
+        <select id="kelas" name="kelas_id" class="form-control" required>
+          <option value="">-- Pilih Kelas --</option>
+          @foreach($kelasList as $kelas)
+            <option value="{{ $kelas->id }}">{{ $kelas->class }} {{ $kelas->subclass }}</option>
+          @endforeach
+        </select>
       </div>
-<div class="form-buttons mt-3" style="display: flex; justify-content: flex-end; gap: 10px;">
-    <a href="{{ route('admin.data_guru') }}" class="btn btn-danger">Batal</a>
-    <button type="submit" class="btn btn-success">Simpan</button>
-</div>
 
+      <div class="form-group mb-2">
+        <label for="gender">Jenis Kelamin</label>
+        <select id="gender" name="gender" class="form-control" required>
+          <option value="">-- Pilih Jenis Kelamin --</option>
+          <option value="male">Laki-laki</option>
+          <option value="female">Perempuan</option>
+        </select>
+      </div>
+
+      <div class="form-buttons mt-3 d-flex justify-content-end gap-2">
+        <a href="{{ route('admin.data_guru') }}" class="btn btn-danger">Batal</a>
+        <button type="submit" class="btn btn-success">Simpan</button>
+      </div>
     </form>
   </div>
 </div>
