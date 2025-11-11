@@ -90,6 +90,7 @@ Route::prefix('guru')->group(function () {
     Route::get('/cek_nilai', [GuruController::class, 'cek_nilai'])->name('guru.cek_nilai');
     Route::get('/input_nilai', [GuruController::class, 'input_nilai'])->name('guru.input_nilai');
     Route::get('/laporan', [GuruController::class, 'laporan'])->name('guru.laporan');
+    Route::post('/absensi/simpan', [GuruController::class, 'simpan_absensi'])->name('guru.simpan_absensi');
 });
 
 // ======================= ORANG TUA ==========================
