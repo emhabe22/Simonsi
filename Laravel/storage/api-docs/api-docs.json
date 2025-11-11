@@ -1160,7 +1160,7 @@
                                                         "type": "string",
                                                         "example": "Matematika"
                                                     },
-                                                 "nilai": {
+                                                    "nilai": {
                                                         "type": "number",
                                                         "example": 90
                                                     }
@@ -1171,6 +1171,238 @@
                                         "catatan": {
                                             "type": "string",
                                             "example": "Siswa aktif dan berprestasi di bidang olahraga."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/orangtua/dashboard": {
+            "get": {
+                "tags": [
+                    "Orang Tua"
+                ],
+                "summary": "Menampilkan ringkasan data dashboard orang tua",
+                "operationId": "d6d0ac341acc9064b59198e6097ef267",
+                "responses": {
+                    "200": {
+                        "description": "Data dashboard berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "nama_orangtua": {
+                                            "type": "string",
+                                            "example": "Siti Aminah"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "example": "siti@sdn1.sch.id"
+                                        },
+                                        "nama_anak": {
+                                            "type": "string",
+                                            "example": "Andi Saputra"
+                                        },
+                                        "kelas_anak": {
+                                            "type": "string",
+                                            "example": "5A"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/orangtua/laporan": {
+            "get": {
+                "tags": [
+                    "Orang Tua"
+                ],
+                "summary": "Menampilkan laporan akademik anak dari orang tua yang login",
+                "operationId": "2c5fc4b669413c54562e54050d6f8208",
+                "responses": {
+                    "200": {
+                        "description": "Data laporan akademik berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "nama_anak": {
+                                            "type": "string",
+                                            "example": "Ahmad Rizky"
+                                        },
+                                        "kelas": {
+                                            "type": "string",
+                                            "example": "6A"
+                                        },
+                                        "tahun_akademik": {
+                                            "type": "string",
+                                            "example": "2025/2026"
+                                        },
+                                        "semester": {
+                                            "type": "string",
+                                            "example": "Genap"
+                                        },
+                                        "nilai": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "no": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "mata_pelajaran": {
+                                                        "type": "string",
+                                                        "example": "Matematika"
+                                                    },
+                                                    "nilai": {
+                                                        "type": "number",
+                                                        "example": 90
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "catatan": {
+                                            "type": "string",
+                                            "example": "Sudah siap untuk olimpiade."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/orangtua/absensi": {
+            "get": {
+                "tags": [
+                    "Orang Tua"
+                ],
+                "summary": "Menampilkan data absensi anak dari orang tua yang login",
+                "operationId": "f613ee664ac0dc1664a5c721d9d32bf5",
+                "responses": {
+                    "200": {
+                        "description": "Data absensi berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "nama_anak": {
+                                                "type": "string",
+                                                "example": "Ahmad Rizky"
+                                            },
+                                            "kelas": {
+                                                "type": "string",
+                                                "example": "6A"
+                                            },
+                                            "tanggal": {
+                                                "type": "string",
+                                                "format": "date",
+                                                "example": "2025-10-21"
+                                            },
+                                            "status": {
+                                                "type": "string",
+                                                "example": "Hadir"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/orangtua/nilai-anak": {
+            "get": {
+                "tags": [
+                    "Orang Tua"
+                ],
+                "summary": "Menampilkan nilai akademik anak dari orang tua yang login berdasarkan tahun akademik dan semester",
+                "operationId": "f0e45a92184b40d7f897a357e2fb6da0",
+                "responses": {
+                    "200": {
+                        "description": "Data nilai anak berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "nama_anak": {
+                                            "type": "string",
+                                            "example": "Michael Joko Nurcipto"
+                                        },
+                                        "tahun_akademik": {
+                                            "type": "string",
+                                            "example": "2025/2026"
+                                        },
+                                        "semester": {
+                                            "type": "string",
+                                            "example": "Genap"
+                                        },
+                                        "nilai": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "no": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "mata_pelajaran": {
+                                                        "type": "string",
+                                                        "example": "Matematika"
+                                                    },
+                                                    "nilai": {
+                                                        "type": "number",
+                                                        "example": 90
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
                                         }
                                     },
                                     "type": "object"
@@ -1211,6 +1443,10 @@
         {
             "name": "Guru",
             "description": "Guru"
+        },
+        {
+            "name": "Orang Tua",
+            "description": "Orang Tua"
         }
     ]
 }
