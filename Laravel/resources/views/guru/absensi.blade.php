@@ -79,7 +79,7 @@
 <!-- Form Filter -->
 <div class="form-card">
     <p><b>Isi kolom dibawah untuk melanjutkan</b></p>
-    <form action="{{ route('admin.absensi') }}" method="GET" id="filterForm">
+    <form action="{{ route('guru.absensi') }}" method="GET" id="filterForm">
         <div class="form-group">
             <div class="form-row">
                 <label for="kelas">Kelas:</label>
@@ -103,7 +103,7 @@
 <!-- Tabel Absensi -->
 @if(request('kelas_id'))
 <div class="table-card">
-    <form action="{{ route('admin.simpan_absensi') }}" method="POST" id="absensiTableForm">
+    <form action="{{ route('guru.simpan_absensi') }}" method="POST" id="absensiTableForm">
         @csrf
         <input type="hidden" name="kelas_id" value="{{ request('kelas_id') }}">
         <input type="hidden" name="tanggal" value="{{ $tanggal ?? date('Y-m-d') }}">
@@ -155,7 +155,7 @@
 
         @if(count($siswa ?? []) > 0)
             <div class="button-group">
-                <button type="button" class="btn btn-danger" onclick="window.location='{{ route('admin.dashboard') }}'">Batal</button>
+                <button type="button" class="btn btn-danger" onclick="window.location='{{ route('guru.dashboard') }}'">Batal</button>
                 <button type="submit" class="btn btn-success">Simpan Absensi</button>
             </div>
         @endif

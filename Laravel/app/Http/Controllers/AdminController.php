@@ -59,54 +59,7 @@ class AdminController extends Controller
     /**
      * Simpan absensi siswa - DIPERBARUI
      */
-    public function simpan_absensi(Request $request)
-    {
-        $request->validate([
-            'kelas_id' => 'required|exists:kelas,id',
-            'tanggal' => 'required|date',
-        ]);
-
-        // Ambil guru login (fallback ID 1 jika tidak ada)
-        $guruId = Auth::user()->guru->id ?? 1;
-        $tanggal = $request->tanggal;
-
-        // Ambil semua siswa di kelas tersebut
-        $siswaIds = Siswa::where('kelas_id', $request->kelas_id)->pluck('id');
-
-        foreach ($siswaIds as $siswaId) {
-            // Cek apakah siswa ini dicentang
-            $isChecked = isset($request->siswa[$siswaId]['checked']);
-
-            if ($isChecked) {
-                // Jika dicentang, ambil status yang dipilih
-                $statusInput = $request->siswa[$siswaId]['status'] ?? 'hadir';
-                $status = match ($statusInput) {
-                    'hadir' => 'present',
-                    'sakit' => 'sick',
-                    'izin'  => 'permission',
-                    'alpa'  => 'absent',
-                    default => 'present'
-                };
-            } else {
-                // Jika tidak dicentang, otomatis alpa
-                $status = 'absent';
-            }
-
-            // Simpan atau update absensi
-            Absensi::updateOrCreate(
-                [
-                    'siswa_id' => $siswaId,
-                    'date' => $tanggal
-                ],
-                [
-                    'status' => $status,
-                    'guru_id' => $guruId
-                ]
-            );
-        }
-
-        return redirect()->back()->with('success', 'Absensi berhasil disimpan!');
-    }
+    
 
     public function nilai()
     {

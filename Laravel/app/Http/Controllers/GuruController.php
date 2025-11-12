@@ -17,10 +17,20 @@ class GuruController extends Controller
     }
 
 
-    public function nilai()
-    {
-        return view('guru.nilai');
+public function nilai(Request $request)
+{
+    // Ambil semua kelas untuk dropdown
+    $kelas = Kelas::all();
+
+    // Ambil siswa hanya jika kelas dipilih
+    $siswa = collect();
+    if ($request->kelas_id) {
+        $siswa = Siswa::where('kelas_id', $request->kelas_id)->get();
     }
+
+    return view('guru.nilai', compact('kelas', 'siswa'));
+}
+
         public function cek_nilai()
     {
         return view('guru.cek_nilai');
