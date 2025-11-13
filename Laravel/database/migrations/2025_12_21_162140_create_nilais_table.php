@@ -29,7 +29,7 @@ return new class extends Migration
     $table->foreignId('mapel_id')->constrained('mapels')->onDelete('cascade');
     $table->foreignId('guru_id')->constrained('gurus')->onDelete('cascade');
     $table->foreignId('kelas_id')->constrained('kelas')->onDelete('cascade');
-    $table->foreignId('tahun_akademik_id')->constrained('tahun_akademiks')->onDelete('cascade');
+    $table->foreignId('tahun_akademik_id')->constrained('tahun_akademik')->onDelete('cascade');
     $table->foreignId('semester_id')->constrained('semesters')->onDelete('cascade');
 
     $table->timestamps();

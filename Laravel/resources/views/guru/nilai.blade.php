@@ -35,6 +35,7 @@
         <tr>
           <th>No</th>
           <th>Nama Siswa</th>
+          <th>Nama Orang Tua</th>
           <th>Aksi</th>
         </tr>
       </thead>
@@ -42,18 +43,22 @@
         @forelse($siswa as $i => $s)
           <tr>
             <td>{{ $i + 1 }}</td>
-            <td>{{ $s->name}}</td>
+            <td>{{ $s->name }}</td>
+            <td>{{ $s->ortu->name ?? '-' }}</td> {{-- Nama ortu dari tabel ortu --}}
             <td>
               <a href="{{ route('guru.cek_nilai', ['id' => $s->id]) }}" class="btn btn-sm btn-success btn-action">
                 <i class="fas fa-eye"></i> Cek Nilai
               </a>
-              <a href="{{ route('guru.input_nilai', ['id' => $s->id]) }}" class="btn btn-sm btn-primary btn-action">
+              <a href="{{ route('guru.input_nilai', ['siswa_id' => $s->id, 'kelas_id' => $s->kelas_id]) }}"
+                 class="btn btn-sm btn-primary btn-action">
                 <i class="fas fa-edit"></i> Input Nilai
               </a>
             </td>
           </tr>
         @empty
-          <tr><td colspan="3" class="text-center">Pilih kelas untuk melihat siswa.</td></tr>
+          <tr>
+            <td colspan="4" class="text-center">Pilih kelas untuk melihat siswa.</td>
+          </tr>
         @endforelse
       </tbody>
     </table>

@@ -6,12 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Siswa extends Model
 {
-    protected $table = 'siswas'; // <— tambahkan ini
+    protected $table = 'siswas';
     protected $guarded = [];
 
+    // Relasi: satu siswa punya satu ortu
     public function ortu()
     {
-        return $this->hasMany(Ortu::class, 'siswa_id', 'id');
+        return $this->hasOne(Ortu::class, 'siswa_id', 'id');
     }
 
     public function kelas()

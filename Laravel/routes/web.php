@@ -91,10 +91,18 @@ Route::prefix('guru')->group(function () {
     Route::get('/dashboard', [GuruController::class, 'dashboard'])->name('guru.dashboard');
     Route::get('/absensi', [GuruController::class, 'absensi'])->name('guru.absensi');
     Route::get('/nilai', [GuruController::class, 'nilai'])->name('guru.nilai');
-    Route::get('/cek_nilai', [GuruController::class, 'cek_nilai'])->name('guru.cek_nilai');
-    Route::get('/input_nilai', [GuruController::class, 'input_nilai'])->name('guru.input_nilai');
     Route::get('/laporan', [GuruController::class, 'laporan'])->name('guru.laporan');
     Route::post('/absensi/simpan', [GuruController::class, 'simpan_absensi'])->name('guru.simpan_absensi');
+    Route::get('/input_nilai/{siswa_id}/{kelas_id}', [GuruController::class, 'input_nilai'])
+    ->name('guru.input_nilai');
+Route::post('/simpan_nilai', [GuruController::class, 'simpan_nilai'])
+    ->name('guru.simpan_nilai');
+    Route::get('/cek_nilai/{id}', [GuruController::class, 'cek_nilai'])->name('guru.cek_nilai');
+    
+    
+
+
+
 });
 
 // ======================= ORANG TUA ==========================

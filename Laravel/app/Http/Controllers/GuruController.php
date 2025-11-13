@@ -6,7 +6,13 @@ use Illuminate\Http\Request;
 use App\Models\Kelas;
 use App\Models\Siswa;
 use App\Models\Absensi;
+use App\Models\Nilai;
+use App\Models\Mapel;
+use App\Models\TahunAkademik;
+use App\Models\Semester;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
 
 class GuruController extends Controller
 {
@@ -16,33 +22,70 @@ class GuruController extends Controller
         return view('guru.dashboard');
     }
 
-
 public function nilai(Request $request)
 {
-    // Ambil semua kelas untuk dropdown
     $kelas = Kelas::all();
-
-    // Ambil siswa hanya jika kelas dipilih
     $siswa = collect();
+
     if ($request->kelas_id) {
-        $siswa = Siswa::where('kelas_id', $request->kelas_id)->get();
+        $siswa = Siswa::with('ortu') // <--- ini penting
+            ->where('kelas_id', $request->kelas_id)
+            ->get();
     }
 
     return view('guru.nilai', compact('kelas', 'siswa'));
 }
 
-        public function cek_nilai()
+
+        public function input_nilai($siswa_id, $kelas_id)
     {
-        return view('guru.cek_nilai');
+        $siswa = Siswa::findOrFail($siswa_id);
+        $kelas = Kelas::findOrFail($kelas_id);
+        $mapel = Mapel::all();
+        $tahun_akademik = TahunAkademik::all();
+        $semester = Semester::all();
+
+        return view('guru.input_nilai', compact('siswa', 'kelas', 'mapel', 'tahun_akademik', 'semester'));
     }
-        public function input_nilai()
+
+    // Simpan Nilai
+    public function simpan_nilai(Request $request)
     {
-        return view('guru.input_nilai');
+        $request->validate([
+            'siswa_id' => 'required|exists:siswas,id',
+            'kelas_id' => 'required|exists:kelas,id',
+            'mapel_id' => 'required|exists:mapels,id',
+            'tahun_akademik_id' => 'required|exists:tahun_akademik,id',
+            'semester_id' => 'required|exists:semesters,id',
+            'proses1' => 'nullable|numeric|min:0|max:100',
+            'proses2' => 'nullable|numeric|min:0|max:100',
+            'uts' => 'nullable|numeric|min:0|max:100',
+            'proses3' => 'nullable|numeric|min:0|max:100',
+            'proses4' => 'nullable|numeric|min:0|max:100',
+            'uas' => 'nullable|numeric|min:0|max:100',
+            'catatan' => 'nullable|string|max:255',
+        ]);
+
+        Nilai::create([
+            'siswa_id' => $request->siswa_id,
+            'kelas_id' => $request->kelas_id,
+            'mapel_id' => $request->mapel_id,
+            'guru_id' => 1,
+            'proses1' => $request->proses1 ?? 0,
+            'proses2' => $request->proses2 ?? 0,
+            'uts' => $request->uts ?? 0,
+            'proses3' => $request->proses3 ?? 0,
+            'proses4' => $request->proses4 ?? 0,
+            'uas' => $request->uas ?? 0,
+            'catatan' => $request->catatan,
+            'tahun_akademik_id' => $request->tahun_akademik_id,
+            'semester_id' => $request->semester_id,
+        ]);
+
+        return redirect()->route('guru.nilai')->with('success', 'Nilai berhasil disimpan!');
     }
-            public function laporan()
-    {
-        return view('guru.laporan');
-    }
+    
+
     public function absensi(Request $request)
     {
         // Ambil semua kelas untuk dropdown
@@ -121,4 +164,60 @@ public function nilai(Request $request)
 
         return redirect()->back()->with('success', 'Absensi berhasil disimpan!');
     }
+public function cek_nilai($id)
+{
+    // Ambil data siswa berdasarkan ID
+    $siswa = Siswa::findOrFail($id);
+
+    // Ambil semua data dropdown
+    $tahunAkademik = TahunAkademik::all();
+    $semester = Semester::all();
+    $mapel = Mapel::all();
+
+    // Ambil semua nilai siswa dari tabel 'nilai'
+    $nilai = Nilai::where('siswa_id', $id)
+        ->with(['mapel', 'semester', 'tahunAkademik'])
+        ->get();
+
+    // Kirim ke view
+    return view('guru.cek_nilai', compact('siswa', 'tahunAkademik', 'semester', 'mapel', 'nilai'));
+}
+public function laporan(Request $request)
+{
+    $kelas = Kelas::all();
+    $tahunAkademik = TahunAkademik::all();
+    $semester = Semester::all();
+
+    // Ambil semua siswa sekaligus
+    $semuaSiswa = Siswa::select('id', 'name', 'kelas_id')->get();
+
+    $nilaiData = collect();
+    $siswa = null;
+    $rataRataKelas = collect();
+
+    if ($request->kelas_id && $request->siswa_id && $request->tahun_akademik_id && $request->semester_id) {
+        $siswa = Siswa::find($request->siswa_id);
+
+        $nilaiData = Nilai::with('mapel')
+            ->where('kelas_id', $request->kelas_id)
+            ->where('siswa_id', $request->siswa_id)
+            ->where('tahun_akademik_id', $request->tahun_akademik_id)
+            ->where('semester_id', $request->semester_id)
+            ->get();
+
+        $rataRataKelas = Nilai::select('mapel_id', DB::raw('AVG((proses1 + proses2 + uts + proses3 + proses4 + uas)/6) as rata_rata'))
+            ->where('kelas_id', $request->kelas_id)
+            ->where('tahun_akademik_id', $request->tahun_akademik_id)
+            ->where('semester_id', $request->semester_id)
+            ->groupBy('mapel_id')
+            ->with('mapel')
+            ->get();
+    }
+
+    return view('guru.laporan', compact(
+        'kelas', 'tahunAkademik', 'semester', 'siswa',
+        'nilaiData', 'rataRataKelas', 'semuaSiswa'
+    ));
+}
+
 }
