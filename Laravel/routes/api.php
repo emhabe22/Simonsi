@@ -47,5 +47,13 @@ Route::post('/guru/nilai', [GuruController::class, 'inputNilai']);
 Route::get('/orangtua/dashboard', [OrtuController::class, 'dashboard']);
 Route::get('/orangtua/laporan', [OrtuController::class, 'laporanAkademik']);
 Route::get('/orangtua/nilai-anak', [OrtuController::class, 'getNilaiAnak']);
+Route::middleware(['role:admin'])
+    ->get('/admin/dashboard', [AdminController::class, 'dashboard']);
+
+Route::middleware(['role:guru'])
+    ->get('/guru/dashboard', [GuruController::class, 'dashboard']);
+
+Route::middleware(['role:ortu'])
+    ->get('/orangtua/dashboard', [OrtuController::class, 'dashboard']);
 
 

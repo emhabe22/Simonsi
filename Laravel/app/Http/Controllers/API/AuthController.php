@@ -5,28 +5,12 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
 use App\Models\User;
-
-// Swagger Annotations
-/**
- * @OA\Info(
- *     title="SIMONSI API",
- *     version="1.0.0",
- *     description="API untuk monitoring belajar dan absensi siswa"
- * )
- *  @OA\SecurityScheme(
- *     securityScheme="bearerAuth",
- *     type="http",
- *     scheme="bearer",
- *     bearerFormat="JWT"
- * )
- */
-
+use App\Models\Guru;
+use App\Models\Ortu;
 
 class AuthController extends Controller
 {
-    //Login Method
     /**
      * @OA\Post(
      *     path="/api/login",
@@ -36,53 +20,75 @@ class AuthController extends Controller
      *         required=true,
      *         @OA\JsonContent(
      *             required={"email","password"},
-     *             @OA\Property(property="email", type="string", example="user123@itn.ac.id"),
-     *             @OA\Property(property="password", type="string", example="securePassword123")
+     *             @OA\Property(property="email", type="string", example="admin@gmail.com"),
+     *             @OA\Property(property="password", type="string", example="password123")
      *         )
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Login sukses",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Login successful."),
-     *             @OA\Property(property="token", type="string", example="someRandomToken123")
-     *         )
+     *         description="Login sukses"
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="Unauthorized",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Invalid credentials.")
-     *         )
+     *         description="Unauthorized"
      *     )
      * )
      */
-   public function login(Request $request)
-{
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required|string',
-    ]);
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
 
-    $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)->first();
 
-    if (!$user || !Hash::check($request->password, $user->password)) {
-        return response()->json(['message' => 'Invalid credentials.'], 401);
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Invalid credentials.'], 401);
+        }
+
+        // Token base64 seperti middleware RoleMiddleware
+        $token = base64_encode($user->email . '|' . now());
+
+        // ========= ROLE-BASED EXTRA DATA =========
+        $extraData = [];
+
+        if ($user->role === 'guru') {
+            $guru = Guru::where('user_id', $user->id)->first();
+            $extraData = [
+                'id_guru' => $guru->id ?? null,
+                'mapel_id' => $guru->mapel_id ?? null,
+                'kelas_id' => $guru->kelas_id ?? null,
+            ];
+        }
+
+        if ($user->role === 'ortu') {
+            $ortu = Ortu::where('user_id', $user->id)->first();
+            $anak = $ortu->siswa ?? null;
+
+            $extraData = [
+                'id_ortu' => $ortu->id ?? null,
+                'nama_orangtua' => $ortu->nama ?? null,
+                'id_anak' => $anak->id ?? null,
+                'nama_anak' => $anak->nama ?? null,
+                'kelas_anak' => $anak->kelas->class ?? null,
+            ];
+        }
+
+        // ==========================================
+
+        return response()->json([
+            'message' => 'Login successful.',
+            'token' => $token,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name ?? $user->nama,
+                'email' => $user->email,
+                'role' => $user->role,
+            ],
+            'extra' => $extraData,
+        ], 200);
     }
-
-    $token = base64_encode($user->email . '|' . now());
-
-    return response()->json([
-        'message' => 'Login successful.',
-        'token' => $token,
-        'user' => [
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'role' => $user->role
-        ]
-    ], 200);
-}
 
 
     /**
@@ -90,26 +96,12 @@ class AuthController extends Controller
      *     path="/api/logout",
      *     summary="Logout pengguna dan mencabut token akses",
      *     tags={"Auth"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Logout berhasil",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Logout successful.")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Token tidak valid atau sudah kadaluarsa",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
-     *         )
-     *     )
+     *     security={{"bearerAuth":{}}}
      * )
      */
-    public function logout(Request $request)
+    public function logout()
     {
+        // Token tidak disimpan, logout hanya pesan sukses
         return response()->json(['message' => 'Logout successful.']);
     }
 }
-
