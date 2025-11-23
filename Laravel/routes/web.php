@@ -4,29 +4,26 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\OrtuController;
-
+use App\Http\Controllers\AuthController;
 // Swagger UI Route
 Route::get('/api/docs', function () {
     return view('l5-swagger::index');
 });
-
-// Halaman Login
 Route::get('/', function () {
     return redirect('/login');
 });
-
-Route::get('/login', function () {
-    return view('login');
-});
+Route::get('/login', [AuthController::class, 'show'])->name('login');
+Route::post('/login', [AuthController::class, 'process'])->name('login.process');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // ======================= ADMIN ==========================
-Route::prefix('admin')->group(function () {
+Route::prefix('admin')->middleware(['auth','role:admin'])->group(function (){
 
     // Dashboard & Menu Utama
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/absensi', [AdminController::class, 'absensi'])->name('admin.absensi');
     Route::get('/nilai', [AdminController::class, 'nilai'])->name('admin.nilai');
-    Route::get('/cek_nilai', [AdminController::class, 'cek_nilai'])->name('admin.cek_nilai');
+    Route::get('/cek_nilai{id}', [AdminController::class, 'cek_nilai'])->name('admin.cek_nilai');
     Route::get('/laporan', [AdminController::class, 'laporan'])->name('admin.laporan');
 
     // Data Management
@@ -46,13 +43,14 @@ Route::prefix('admin')->group(function () {
     Route::get('/tambah_akademik', [AdminController::class, 'tambah_akademik'])->name('admin.tambah_akademik');
 
     Route::post('/absensi/simpan', [AdminController::class, 'simpan_absensi'])->name('admin.simpan_absensi');
+    Route::get('/laporan/pdf', [AdminController::class, 'laporan_pdf'])->name('admin.laporan.pdf');
 
 
 
     // GURU
     Route::get('/guru/edit/{id}', [AdminController::class, 'edit_guru'])->name('admin.edit_guru');
     Route::put('/guru/{id}', [AdminController::class, 'update_guru'])->name('admin.update_guru');
-    Route::post('/admin/guru/simpan', [AdminController::class, 'simpan_guru'])->name('admin.simpan_guru');
+    Route::post('/guru/simpan', [AdminController::class, 'simpan_guru'])->name('admin.simpan_guru');
     Route::delete('/guru/delete/{id}', [AdminController::class, 'hapus_guru'])->name('admin.hapus_guru');
 
     // ORANG TUA
@@ -87,7 +85,7 @@ Route::prefix('admin')->group(function () {
 });
 
 // ======================= GURU ==========================
-Route::prefix('guru')->group(function () {
+Route::prefix('guru')->middleware(['auth','role:guru'])->group(function () {
     Route::get('/dashboard', [GuruController::class, 'dashboard'])->name('guru.dashboard');
     Route::get('/absensi', [GuruController::class, 'absensi'])->name('guru.absensi');
     Route::get('/nilai', [GuruController::class, 'nilai'])->name('guru.nilai');
@@ -98,6 +96,7 @@ Route::prefix('guru')->group(function () {
 Route::post('/simpan_nilai', [GuruController::class, 'simpan_nilai'])
     ->name('guru.simpan_nilai');
     Route::get('/cek_nilai/{id}', [GuruController::class, 'cek_nilai'])->name('guru.cek_nilai');
+    Route::get('/laporan/pdf', [GuruController::class, 'laporan_pdf'])->name('guru.laporan.pdf');
     
     
 
@@ -106,9 +105,11 @@ Route::post('/simpan_nilai', [GuruController::class, 'simpan_nilai'])
 });
 
 // ======================= ORANG TUA ==========================
-Route::prefix('ortu')->group(function () {
+Route::prefix('ortu')->middleware(['auth','role:ortu'])->group(function () {
     Route::get('/dashboard', [OrtuController::class, 'dashboard'])->name('ortu.dashboard');
     Route::get('/absensi', [OrtuController::class, 'absensi'])->name('ortu.absensi');
     Route::get('/nilai', [OrtuController::class, 'nilai'])->name('ortu.nilai');
     Route::get('/laporan', [OrtuController::class, 'laporan'])->name('ortu.laporan');
+    Route::get('/laporan/pdf', [OrtuController::class, 'laporan_pdf'])->name('ortu.laporan.pdf');
+
 });

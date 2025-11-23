@@ -8,24 +8,38 @@
 
     <!-- Navigasi Bulan -->
     <div class="card shadow mb-3">
-  <div class="card-body p-2 text-center">
-    <div class="month-navbar d-flex flex-wrap justify-content-center">
-      <button class="btn btn-primary active" style="margin: 4px;">Januari</button>
-      <button class="btn btn-outline-primary" style="margin: 4px;">Februari</button>
-      <button class="btn btn-outline-primary" style="margin: 4px;">Maret</button>
-      <button class="btn btn-outline-primary" style="margin: 4px;">April</button>
-      <button class="btn btn-outline-primary" style="margin: 4px;">Mei</button>
-      <button class="btn btn-outline-primary" style="margin: 4px;">Juni</button>
-      <button class="btn btn-outline-primary" style="margin: 4px;">Juli</button>
-      <button class="btn btn-outline-primary" style="margin: 4px;">Agustus</button>
-      <button class="btn btn-outline-primary" style="margin: 4px;">September</button>
-      <button class="btn btn-outline-primary" style="margin: 4px;">Oktober</button>
-      <button class="btn btn-outline-primary" style="margin: 4px;">November</button>
-      <button class="btn btn-outline-primary" style="margin: 4px;">Desember</button>
-    </div>
-  </div>
-</div>
+        <div class="card-body p-2 text-center">
+            <div class="month-navbar d-flex flex-wrap justify-content-center">
 
+                @php
+                    $bulanList = [
+                        '01' => 'Januari',
+                        '02' => 'Februari',
+                        '03' => 'Maret',
+                        '04' => 'April',
+                        '05' => 'Mei',
+                        '06' => 'Juni',
+                        '07' => 'Juli',
+                        '08' => 'Agustus',
+                        '09' => 'September',
+                        '10' => 'Oktober',
+                        '11' => 'November',
+                        '12' => 'Desember',
+                    ];
+                    $currentBulan = request('bulan') ?? date('m');
+                @endphp
+
+                @foreach($bulanList as $num => $nama)
+                    <a href="?bulan={{ $num }}"
+                        class="btn {{ $currentBulan == $num ? 'btn-primary text-white' : 'btn-outline-primary' }}"
+                        style="margin:4px;">
+                        {{ $nama }}
+                    </a>
+                @endforeach
+
+            </div>
+        </div>
+    </div>
 
     <!-- Tabel Absensi -->
     <div class="card shadow">
@@ -39,59 +53,43 @@
                         <th>Keterangan</th>
                     </tr>
                 </thead>
+
                 <tbody>
-                    <tr>
-                        <td>Senin</td>
-                        <td>13 Oktober 2025</td>
-                        <td class="text-success fw-bold">Hadir</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>Selasa</td>
-                        <td>14 Oktober 2025</td>
-                        <td class="text-success fw-bold">Hadir</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>Rabu</td>
-                        <td>15 Oktober 2025</td>
-                        <td class="text-warning fw-bold">Izin</td>
-                        <td>Acara keluarga</td>
-                    </tr>
-                    <tr>
-                        <td>Kamis</td>
-                        <td>16 Oktober 2025</td>
-                        <td class="text-danger fw-bold">Sakit</td>
-                        <td>Demam</td>
-                    </tr>
-                    <tr>
-                        <td>Jumat</td>
-                        <td>17 Oktober 2025</td>
-                        <td class="text-success fw-bold">Hadir</td>
-                        <td>-</td>
-                    </tr>
+
+                    @forelse($absensi as $a)
+                        <tr>
+                           <td>{{ \Carbon\Carbon::parse($a->date)->isoFormat('dddd') }}</td>
+
+
+                            <td>{{ \Carbon\Carbon::parse($a->date)->translatedFormat('d F Y') }}</td>
+
+                            <td class="
+                                @if($a->status == 'present') text-success 
+                                @elseif($a->status == 'sick') text-danger 
+                                @elseif($a->status == 'permission') text-warning 
+                                @else text-muted 
+                                @endif fw-bold
+                            ">
+                                @if($a->status == 'present') Hadir
+                                @elseif($a->status == 'sick') Sakit
+                                @elseif($a->status == 'permission') Izin
+                                @else Alpa
+                                @endif
+                            </td>
+
+                            <td>{{ $a->keterangan ?? '-' }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="text-center text-danger fw-bold py-3">
+                                Tidak ada data absensi pada bulan ini.
+                            </td>
+                        </tr>
+                    @endforelse
+
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-
-<!-- Script tombol bulan -->
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const buttons = document.querySelectorAll('.month-navbar button');
-
-        buttons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                buttons.forEach(b => {
-                    b.classList.remove('btn-primary', 'active');
-                    b.classList.add('btn-outline-primary');
-                });
-                btn.classList.remove('btn-outline-primary');
-                btn.classList.add('btn-primary', 'active');
-                console.log("Bulan dipilih:", btn.textContent);
-            });
-        });
-    });
-</script>
 @endsection

@@ -48,6 +48,18 @@
           @endforeach
         </select>
       </div>
+      <div class="form-group mb-3">
+    <label for="email">Email</label>
+    <input type="email" name="email" id="email" class="form-control"
+        value="{{ old('email', $orangtua->user->email) }}" required>
+    </div>
+
+<div class="form-group mb-3">
+    <label for="password">Password (opsional)</label>
+    <input type="password" name="password" id="password" class="form-control"
+        placeholder="Kosongkan jika tidak ingin diubah">
+</div>
+
 
       <div class="text-end">
         <a href="{{ route('admin.data_orangtua') }}" class="btn btn-danger">Batal</a>

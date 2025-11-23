@@ -12,14 +12,19 @@ use App\Models\TahunAkademik;
 use App\Models\Semester;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 
 class GuruController extends Controller
 {
-        public function dashboard()
+        public function dashboard(Request $request)
     {
+    $user = $request->user();
+    $guru = \App\Models\Guru::where('user_id', $user->id)->first();
+
+    return view('guru.dashboard', compact('guru','user'));
        
-        return view('guru.dashboard');
+
     }
 
 public function nilai(Request $request)
@@ -39,14 +44,26 @@ public function nilai(Request $request)
 
         public function input_nilai($siswa_id, $kelas_id)
     {
-        $siswa = Siswa::findOrFail($siswa_id);
-        $kelas = Kelas::findOrFail($kelas_id);
-        $mapel = Mapel::all();
-        $tahun_akademik = TahunAkademik::all();
-        $semester = Semester::all();
+ $siswa = Siswa::findOrFail($siswa_id);
+    $kelas = Kelas::findOrFail($kelas_id);
 
-        return view('guru.input_nilai', compact('siswa', 'kelas', 'mapel', 'tahun_akademik', 'semester'));
+    // Ambil guru login (karena relasi user -> guru = hasMany)
+    $guru = Auth::user()->guru->first();
+
+    if (!$guru) {
+        abort(403, 'Data guru tidak ditemukan.');
     }
+
+    // Mapel yang diajar guru
+    $mapel = $guru->mapel;
+
+    $tahun_akademik = TahunAkademik::all();
+    $semester = Semester::all();
+
+    return view('guru.input_nilai', compact('siswa', 'kelas', 'mapel', 'tahun_akademik', 'semester'));
+}
+
+    
 
     // Simpan Nilai
     public function simpan_nilai(Request $request)
@@ -65,12 +82,17 @@ public function nilai(Request $request)
             'uas' => 'nullable|numeric|min:0|max:100',
             'catatan' => 'nullable|string|max:255',
         ]);
+$guru = Auth::user()->guru()->first();
+
+if (!$guru) {
+    dd("Guru tidak ditemukan untuk user", Auth::user());
+}
 
         Nilai::create([
             'siswa_id' => $request->siswa_id,
             'kelas_id' => $request->kelas_id,
             'mapel_id' => $request->mapel_id,
-            'guru_id' => 1,
+            'guru_id' => $guru->id,
             'proses1' => $request->proses1 ?? 0,
             'proses2' => $request->proses2 ?? 0,
             'uts' => $request->uts ?? 0,
@@ -119,50 +141,57 @@ public function nilai(Request $request)
     public function simpan_absensi(Request $request)
     {
         $request->validate([
-            'kelas_id' => 'required|exists:kelas,id',
-            'tanggal' => 'required|date',
-        ]);
+        'kelas_id' => 'required|exists:kelas,id',
+        'tanggal' => 'required|date',
+    ]);
 
-        // Ambil guru login (fallback ID 1 jika tidak ada)
-        $guruId = Auth::user()->guru->id ?? 1;
-        $tanggal = $request->tanggal;
+    // Ambil guru yang sedang login
+    $guru = Auth::user()->guru()->first();
 
-        // Ambil semua siswa di kelas tersebut
-        $siswaIds = Siswa::where('kelas_id', $request->kelas_id)->pluck('id');
+    // Validasi jika guru tidak ditemukan
+    if (!$guru) {
+        return redirect()->back()->with('error', 'Akun Anda tidak terhubung dengan data guru!');
+    }
 
-        foreach ($siswaIds as $siswaId) {
-            // Cek apakah siswa ini dicentang
-            $isChecked = isset($request->siswa[$siswaId]['checked']);
+    $guruId = $guru->id;
+    $tanggal = $request->tanggal;
 
-            if ($isChecked) {
-                // Jika dicentang, ambil status yang dipilih
-                $statusInput = $request->siswa[$siswaId]['status'] ?? 'hadir';
-                $status = match ($statusInput) {
-                    'hadir' => 'present',
-                    'sakit' => 'sick',
-                    'izin'  => 'permission',
-                    'alpa'  => 'absent',
-                    default => 'present'
-                };
-            } else {
-                // Jika tidak dicentang, otomatis alpa
-                $status = 'absent';
-            }
+    // Ambil semua siswa di kelas tersebut
+    $siswaIds = Siswa::where('kelas_id', $request->kelas_id)->pluck('id');
 
-            // Simpan atau update absensi
-            Absensi::updateOrCreate(
-                [
-                    'siswa_id' => $siswaId,
-                    'date' => $tanggal
-                ],
-                [
-                    'status' => $status,
-                    'guru_id' => $guruId
-                ]
-            );
+    foreach ($siswaIds as $siswaId) {
+        // Cek apakah siswa ini dicentang
+        $isChecked = isset($request->siswa[$siswaId]['checked']);
+
+        if ($isChecked) {
+            // Jika dicentang, ambil status yang dipilih
+            $statusInput = $request->siswa[$siswaId]['status'] ?? 'hadir';
+            $status = match ($statusInput) {
+                'hadir' => 'present',
+                'sakit' => 'sick',
+                'izin'  => 'permission',
+                'alpa'  => 'absent',
+                default => 'present'
+            };
+        } else {
+            // Jika tidak dicentang, otomatis alpa
+            $status = 'absent';
         }
 
-        return redirect()->back()->with('success', 'Absensi berhasil disimpan!');
+        // Simpan atau update absensi
+        Absensi::updateOrCreate(
+            [
+                'siswa_id' => $siswaId,
+                'date' => $tanggal
+            ],
+            [
+                'status' => $status,
+                'guru_id' => $guruId
+            ]
+        );
+    }
+
+    return redirect()->back()->with('success', 'Absensi berhasil disimpan!');
     }
 public function cek_nilai($id)
 {
@@ -219,5 +248,20 @@ public function laporan(Request $request)
         'nilaiData', 'rataRataKelas', 'semuaSiswa'
     ));
 }
+    public function laporan_pdf(Request $request)
+{
+$siswa = Siswa::find($request->siswa_id);
 
+    $nilaiData = Nilai::with('mapel')
+        ->where('kelas_id', $request->kelas_id)
+        ->where('siswa_id', $request->siswa_id)
+        ->where('tahun_akademik_id', $request->tahun_akademik_id)
+        ->where('semester_id', $request->semester_id)
+        ->get();
+
+    $pdf = Pdf::loadView('guru.laporan_pdf', compact('siswa', 'nilaiData'))
+            ->setPaper('A4', 'portrait');
+
+    return $pdf->stream('Laporan Akademik - '.$siswa->name.'.pdf');
+}
 }

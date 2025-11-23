@@ -70,7 +70,7 @@
           </tr>
         @empty
           <tr>
-            <td colspan="7" class="text-center">Belum ada data orang tua</td>
+            <td colspan="8" class="text-center">Belum ada data orang tua</td>
           </tr>
         @endforelse
       </tbody>

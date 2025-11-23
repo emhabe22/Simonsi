@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
+     if (!Schema::hasTable('semesters')) {
         Schema::create('semesters', function (Blueprint $table) {
             $table->id();
             $table->enum('semester', ['ganjil', 'genap']);
             $table->timestamps();
         });
+    }
     }
 
     /**

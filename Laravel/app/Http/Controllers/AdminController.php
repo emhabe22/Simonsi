@@ -11,7 +11,11 @@ use App\Models\Siswa;
 use App\Models\Ortu;
 use App\Models\Guru;
 use App\Models\Absensi;
+use App\Models\Nilai;
+use App\Models\Semester;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AdminController extends Controller
 {
@@ -108,20 +112,77 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Absensi berhasil disimpan!');
     }
 
-    public function nilai()
+    public function nilai(Request $request)
     {
-        return view('admin.nilai');
+  $kelas = Kelas::all();
+    $tahunAkademik = TahunAkademik::all();
+    $semester = Semester::all();
+
+    $siswa = collect();
+
+    // Munculkan data jika semua filter dipilih
+    if ($request->kelas_id && $request->tahun_akademik_id && $request->semester_id) {
+        $siswa = Siswa::with('ortu')
+            ->where('kelas_id', $request->kelas_id)
+            ->get();
     }
 
-    public function cek_nilai()
-    {
-        return view('admin.cek_nilai');
+    return view('admin.nilai', compact(
+        'kelas',
+        'tahunAkademik',
+        'semester',
+        'siswa'
+    ));
     }
 
-    public function laporan()
-    {
-        return view('admin.laporan');
+public function cek_nilai($id)
+{
+    $siswa = Siswa::with('kelas')->findOrFail($id);
+
+    $nilai = Nilai::with('mapel', 'semester', 'tahunAkademik')
+        ->where('siswa_id', $id)
+        ->get();
+
+    return view('admin.cek_nilai', compact('siswa', 'nilai'));
+}
+
+public function laporan(Request $request)
+{
+    $kelas = Kelas::all();
+    $tahunAkademik = TahunAkademik::all();
+    $semester = Semester::all();
+
+    // Ambil semua siswa sekaligus
+    $semuaSiswa = Siswa::select('id', 'name', 'kelas_id')->get();
+
+    $nilaiData = collect();
+    $siswa = null;
+    $rataRataKelas = collect();
+
+    if ($request->kelas_id && $request->siswa_id && $request->tahun_akademik_id && $request->semester_id) {
+        $siswa = Siswa::find($request->siswa_id);
+
+        $nilaiData = Nilai::with('mapel')
+            ->where('kelas_id', $request->kelas_id)
+            ->where('siswa_id', $request->siswa_id)
+            ->where('tahun_akademik_id', $request->tahun_akademik_id)
+            ->where('semester_id', $request->semester_id)
+            ->get();
+
+        $rataRataKelas = Nilai::select('mapel_id', DB::raw('AVG((proses1 + proses2 + uts + proses3 + proses4 + uas)/6) as rata_rata'))
+            ->where('kelas_id', $request->kelas_id)
+            ->where('tahun_akademik_id', $request->tahun_akademik_id)
+            ->where('semester_id', $request->semester_id)
+            ->groupBy('mapel_id')
+            ->with('mapel')
+            ->get();
     }
+
+    return view('admin.laporan', compact(
+        'kelas', 'tahunAkademik', 'semester', 'siswa',
+        'nilaiData', 'rataRataKelas', 'semuaSiswa'
+    ));
+}
 
     /* ===============================
        DATA MASTER
@@ -181,7 +242,7 @@ class AdminController extends Controller
 
     public function tambah_orangtua()
     {
-        $siswaList = Siswa::all();
+        $siswaList = Siswa::doesntHave('ortu')->get();
         return view('admin.tambah_orangtua', compact('siswaList'));
     }
 
@@ -212,29 +273,44 @@ class AdminController extends Controller
     =============================== */
     public function simpan_guru(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'nip' => 'required|string|max:50|unique:gurus,nip',
-            'address' => 'required|string|max:255',
-            'gender' => 'required|in:male,female',
-            'date_of_birth' => 'required|date',
-            'kelas_id' => 'required|exists:kelas,id',
-            'mapel_id' => 'required|exists:mapels,id',
-        ]);
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'nip' => 'required|string|max:50|unique:gurus,nip',
+        'address' => 'required|string|max:255',
+        'gender' => 'required|in:male,female',
+        'date_of_birth' => 'required|date',
+        'kelas_id' => 'required|exists:kelas,id',
+        'mapel_id' => 'required|exists:mapels,id',
 
-        Guru::create([
-            'name' => $request->name,
-            'nip' => $request->nip,
-            'address' => $request->address,
-            'gender' => $request->gender,
-            'date_of_birth' => $request->date_of_birth,
-            'kelas_id' => $request->kelas_id,
-            'mapel_id' => $request->mapel_id,
-            'user_id' => \App\Models\User::first()?->id ?? 1,
-        ]);
+        // Tambahan untuk tabel users
+        'email' => 'required|string|email|max:255|unique:users,email',
+        'password' => 'required|string|min:6',
+    ]);
 
-        return redirect()->route('admin.data_guru')->with('success', 'Data guru berhasil ditambahkan!');
+    // 1. Simpan ke tabel users
+    $user = \App\Models\User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => bcrypt($request->password),
+        'email_verified_at' => now(),
+        'role' => 'guru', // role untuk login guru
+    ]);
+
+    // 2. Simpan ke tabel guru
+    Guru::create([
+        'name' => $request->name,
+        'nip' => $request->nip,
+        'address' => $request->address,
+        'gender' => $request->gender,
+        'date_of_birth' => $request->date_of_birth,
+        'kelas_id' => $request->kelas_id,
+        'mapel_id' => $request->mapel_id,
+        'user_id' => $user->id, // gunakan id user
+    ]);
+
+    return redirect()->route('admin.data_guru')->with('success', 'Data guru berhasil ditambahkan!');
     }
+
 
     public function simpan_kelas(Request $request)
     {
@@ -288,45 +364,62 @@ class AdminController extends Controller
 
     public function simpan_orangtua(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20|unique:ortus,phone',
-            'address' => 'required|string|max:255',
-            'gender' => 'required|in:male,female',
-            'date_of_birth' => 'required|date',
-            'siswa_id' => 'required|exists:siswas,id',
-        ]);
 
-        Ortu::create([
-            'name' => $request->name,
-            'phone' => $request->phone,
-            'address' => $request->address,
-            'gender' => $request->gender,
-            'date_of_birth' => $request->date_of_birth,
-            'siswa_id' => $request->siswa_id,
-            'user_id' => \App\Models\User::first()?->id ?? 5,
-        ]);
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'phone' => 'required|string|max:20|unique:ortus,phone',
+        'address' => 'required|string|max:255',
+        'gender' => 'required|in:male,female',
+        'date_of_birth' => 'required|date',
+        'siswa_id' => 'required|exists:siswas,id',
 
-        return redirect()->route('admin.data_orangtua')->with('success', 'Data orang tua berhasil disimpan!');
-    }
+        // Tambahan validate untuk tabel users
+        'email' => 'required|string|email|max:255|unique:users,email',
+        'password' => 'required|string|min:6',
+    ]);
+
+    // 1. Simpan ke tabel users
+    $user = \App\Models\User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => bcrypt($request->password),
+        'email_verified_at' => now(),
+        'role' => 'ortu', // supaya login sebagai orang tua, sesuaikan jika beda
+    ]);
+
+    // 2. Simpan ke tabel ortus
+    Ortu::create([
+        'name' => $request->name,
+        'phone' => $request->phone,
+        'address' => $request->address,
+        'gender' => $request->gender,
+        'date_of_birth' => $request->date_of_birth,
+        'siswa_id' => $request->siswa_id,
+        'user_id' => $user->id, // gunakan id user
+    ]);
+
+    return redirect()->route('admin.data_orangtua')->with('success', 'Data orang tua berhasil ditambahkan!');
+}
+
 
     /* ===============================
        EDIT & UPDATE DATA
     =============================== */
 
-    public function hapus_orangtua($id)
-    {
-        $ortu = Ortu::find($id);
+   public function hapus_orangtua($id)
+{
+    $ortu = Ortu::find($id);
 
-        if (!$ortu) {
-            return redirect()->route('admin.data_orangtua')->with('error', 'Data orang tua tidak ditemukan.');
-        }
-
-        $ortu->delete();
-
-        return redirect()->route('admin.data_orangtua')->with('success', 'Data orang tua berhasil dihapus!');
+    if (!$ortu) {
+        return redirect()->route('admin.data_orangtua')->with('error', 'Data orang tua tidak ditemukan.');
     }
 
+    $userId = $ortu->user_id;
+    $ortu->delete();
+    \App\Models\User::where('id', $userId)->delete();
+
+    return redirect()->route('admin.data_orangtua')->with('success', 'Data orang tua berhasil dihapus!');
+}
     // ===== Siswa =====
     public function edit_siswa($id)
     {
@@ -427,18 +520,20 @@ class AdminController extends Controller
         return redirect()->route('admin.data_guru')->with('success', 'Data guru berhasil diperbarui!');
     }
 
-    public function hapus_guru($id)
-    {
-        $guru = Guru::find($id);
+   public function hapus_guru($id)
+{
+    $guru = Guru::find($id);
 
-        if (!$guru) {
-            return redirect()->route('admin.data_guru')->with('error', 'Data guru tidak ditemukan.');
-        }
-
-        $guru->delete();
-
-        return redirect()->route('admin.data_guru')->with('success', 'Data guru berhasil dihapus!');
+    if (!$guru) {
+        return redirect()->route('admin.data_guru')->with('error', 'Data guru tidak ditemukan.');
     }
+
+    $userId = $guru->user_id;
+    $guru->delete();
+    \App\Models\User::where('id', $userId)->delete();
+
+    return redirect()->route('admin.data_guru')->with('success', 'Data guru berhasil dihapus!');
+}
 
     // ===== Orang Tua =====
     public function edit_orangtua($id)
@@ -453,32 +548,49 @@ class AdminController extends Controller
         return view('admin.edit_orangtua', compact('orangtua', 'siswaList'));
     }
 
-    public function update_orangtua(Request $request, $id)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20|unique:ortus,phone,' . $id,
-            'address' => 'required|string|max:255',
-            'gender' => 'required|in:male,female',
-            'siswa_id' => 'required|exists:siswas,id',
-        ]);
+   public function update_orangtua(Request $request, $id)
+{
+    $orangtua = Ortu::find($id);
 
-        $orangtua = Ortu::find($id);
-
-        if (!$orangtua) {
-            return redirect()->route('admin.data_orangtua')->with('error', 'Data orang tua tidak ditemukan.');
-        }
-
-        $orangtua->update([
-            'name' => $request->name,
-            'phone' => $request->phone,
-            'address' => $request->address,
-            'gender' => $request->gender,
-            'siswa_id' => $request->siswa_id,
-        ]);
-
-        return redirect()->route('admin.data_orangtua')->with('success', 'Data orang tua berhasil diperbarui!');
+    if (!$orangtua) {
+        return redirect()->route('admin.data_orangtua')->with('error', 'Data orang tua tidak ditemukan.');
     }
+
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'phone' => 'required|string|max:20|unique:ortus,phone,' . $id,
+        'address' => 'required|string|max:255',
+        'gender' => 'required|in:male,female',
+        'date_of_birth' => 'required|date',
+        'siswa_id' => 'required|exists:siswas,id',
+        'email' => 'required|email|unique:users,email,' . $orangtua->user_id,
+        'password' => 'nullable|min:6',
+    ]);
+
+    // Update data ortu
+    $orangtua->update([
+        'name' => $request->name,
+        'phone' => $request->phone,
+        'address' => $request->address,
+        'gender' => $request->gender,
+        'date_of_birth' => $request->date_of_birth,
+        'siswa_id' => $request->siswa_id,
+    ]);
+
+    // Update data user
+    $user = $orangtua->user;
+    $user->email = $request->email;
+    $user->name = $request->name; // opsional biar nama login ikut berubah
+
+    if ($request->password) {
+        $user->password = bcrypt($request->password);
+    }
+
+    $user->save();
+
+    return redirect()->route('admin.data_orangtua')->with('success', 'Data orang tua berhasil diperbarui!');
+}
+
 
     // ===== Kelas =====
     public function edit_kelas($id)
@@ -582,4 +694,20 @@ class AdminController extends Controller
 
         return redirect()->route('admin.data_mapel')->with('success', 'Data mata pelajaran berhasil dihapus!');
     }
+    public function laporan_pdf(Request $request)
+{
+$siswa = Siswa::find($request->siswa_id);
+
+    $nilaiData = Nilai::with('mapel')
+        ->where('kelas_id', $request->kelas_id)
+        ->where('siswa_id', $request->siswa_id)
+        ->where('tahun_akademik_id', $request->tahun_akademik_id)
+        ->where('semester_id', $request->semester_id)
+        ->get();
+
+    $pdf = Pdf::loadView('admin.laporan_pdf', compact('siswa', 'nilaiData'))
+            ->setPaper('A4', 'portrait');
+
+    return $pdf->stream('Laporan Akademik - '.$siswa->name.'.pdf');
+}
 }

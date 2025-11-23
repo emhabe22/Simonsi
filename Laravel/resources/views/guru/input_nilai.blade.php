@@ -54,17 +54,14 @@
 
 
             {{-- Mata Pelajaran --}}
-            <div class="mb-3 row">
-                <label class="col-sm-2 col-form-label">Mata Pelajaran</label>
-                <div class="col-sm-10">
-                    <select name="mapel_id" class="form-select" required>
-                        <option value="">Pilih Mapel</option>
-                        @foreach($mapel as $m)
-                            <option value="{{ $m->id }}">{{ $m->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
+<div class="mb-3 row">
+    <label class="col-sm-2 col-form-label">Mata Pelajaran</label>
+    <div class="col-sm-10">
+        <input type="hidden" name="mapel_id" value="{{ $mapel->id }}">
+        <span class="form-control-plaintext">{{ $mapel->name }}</span>
+    </div>
+</div>
+
 
             {{-- Nilai Proses & Ujian --}}
             @php

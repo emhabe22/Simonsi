@@ -6,110 +6,93 @@
 <div class="laporan">
   <h2 class="page-title">Laporan Akademik</h2>
 
+  <!-- Form Filter -->
   <div class="card shadow p-4 mb-3">
     <p><b>LAPORAN AKADEMIK SISWA</b></p>
 
-    <form id="formLaporan">
+    <form method="GET" action="{{ route('ortu.laporan') }}">
       <div style="display:flex; flex-direction:column; gap:12px; width:100%;">
 
         <div style="display:flex; align-items:center; gap:12px;">
           <label for="tahun" style="min-width:140px;">Tahun Akademik :</label>
-          <select class="select" id="tahun" name="tahun">
+          <select class="select" id="tahun" name="tahun_akademik_id">
             <option value="">-- Pilih Tahun Akademik --</option>
-            <option value="2025">2025</option>
-            <option value="2026">2026</option>
+            @foreach($tahunList as $t)
+              <option value="{{ $t->id }}" {{ request('tahun_akademik_id') == $t->id ? 'selected' : '' }}>
+                {{ $t->id_tahun }}
+              </option>
+            @endforeach
           </select>
         </div>
 
         <div style="display:flex; align-items:center; gap:12px;">
           <label for="semester" style="min-width:140px;">Semester :</label>
-          <select class="select" id="semester" name="semester">
+          <select class="select" id="semester" name="semester_id">
             <option value="">-- Pilih Semester --</option>
-            <option value="ganjil">Ganjil</option>
-            <option value="genap">Genap</option>
+            @foreach($semesterList as $s)
+              <option value="{{ $s->id }}" {{ request('semester_id') == $s->id ? 'selected' : '' }}>
+                {{ ucfirst($s->semester) }}
+              </option>
+            @endforeach
           </select>
         </div>
 
         <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:12px;">
-          <button type="submit" class="btn btn-success">Cetak Laporan</button>
+          <button type="submit" class="btn btn-success">Tampilkan</button>
         </div>
 
       </div>
     </form>
   </div>
 
-  <!-- Tabel nilai (disembunyikan dulu dengan d-none) -->
-  <div id="tabelNilai" class="card shadow p-4 d-none" style="margin-top:20px;">
-    <h2>Hasil Nilai</h2>
-    <p id="infoSiswa">Nama: Siswa Contoh | Kelas: 1A | Tahun: 2025 | Semester: Ganjil</p>
+  <!-- Tabel Nilai -->
+  @if(request('tahun_akademik_id') && request('semester_id'))
+  <div id="tabelNilai" class="card shadow p-4" style="margin-top:20px;">
+    <h4><b>Hasil Nilai</b></h4>
+
+    <p>
+      Nama: <b>{{ $siswa->name }}</b> |
+      Kelas: <b>{{ $siswa->kelas->class }}{{ $siswa->kelas->subclass }}</b>
+    </p>
+
     <table class="table table-bordered table-striped" style="width:100%;">
       <thead style="background-color:#0d6efd; color:white;">
         <tr>
           <th>No</th>
-          <th>Nama Mata Pelajaran</th>
-          <th>Nilai</th>
+          <th>Mata Pelajaran</th>
+          <th>Nilai Rata-rata</th>
           <th>Grade</th>
         </tr>
       </thead>
-      <tbody id="tbodyNilai">
-        <!-- Data akan diisi oleh JavaScript -->
+      <tbody>
+        @forelse ($nilai as $i => $n)
+          @php
+            $avg = round(($n->proses1 + $n->proses2 + $n->uts + $n->proses3 + $n->proses4 + $n->uas) / 6);
+            $grade = $avg >= 90 ? 'A' : ($avg >= 80 ? 'B' : 'C');
+          @endphp
+
+          <tr>
+            <td>{{ $i + 1 }}</td>
+            <td>{{ $n->mapel->name }}</td>
+            <td>{{ $avg }}</td>
+            <td>{{ $grade }}</td>
+          </tr>
+        @empty
+          <tr>
+            <td colspan="4" class="text-center text-danger fw-bold py-3">
+              Belum ada nilai untuk filter tersebut.
+            </td>
+          </tr>
+        @endforelse
       </tbody>
+
     </table>
-    <p><b>Catatan : Sukses</b></p>
+              <div class="text-end mt-3">
+      <a href="{{ route('ortu.laporan.pdf', ['tahun_akademik_id' => request('tahun_akademik_id'), 'semester_id' => request('semester_id')]) }}"
+         class="btn btn-primary" target="_blank">Cetak PDF</a>
+    </div>
   </div>
+  @endif
+
 </div>
-
-{{-- JavaScript --}}
-<script>
-  const dataNilai = {
-    "Matematika": 88,
-    "IPA": 90,
-    "Bahasa Indonesia": 85
-  };
-
-  const formLaporan = document.getElementById("formLaporan");
-  const tabelNilaiDiv = document.getElementById("tabelNilai");
-  const tbodyNilai = document.getElementById("tbodyNilai");
-  const infoSiswa = document.getElementById("infoSiswa");
-
-  function hitungGrade(nilai) {
-    if (nilai >= 90) return "A";
-    if (nilai >= 80) return "B";
-    return "C";
-  }
-
-  formLaporan.addEventListener("submit", function(e) {
-    e.preventDefault();
-
-    const tahun = document.getElementById("tahun").value;
-    const semester = document.getElementById("semester").value;
-
-    if (!tahun || !semester) {
-      alert("Harap lengkapi Tahun Akademik dan Semester!");
-      return;
-    }
-
-    // Update info siswa
-    infoSiswa.textContent = `Nama: Siswa Contoh | Kelas: 1A | Tahun: ${tahun} | Semester: ${semester}`;
-
-    // Isi tabel nilai
-    tbodyNilai.innerHTML = "";
-    let i = 1;
-    for (const mapel in dataNilai) {
-      const nilai = dataNilai[mapel];
-      const grade = hitungGrade(nilai);
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${i++}</td>
-        <td>${mapel}</td>
-        <td>${nilai}</td>
-        <td>${grade}</td>
-      `;
-      tbodyNilai.appendChild(tr);
-    }
-
-    // Tampilkan tabel
-    tabelNilaiDiv.classList.remove("d-none");
-  });
-</script>
 @endsection

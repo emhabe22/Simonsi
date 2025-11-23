@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Model;
     use HasFactory;
 
     protected $fillable = [
-        'siswa_id', 'kelas_id', 'mapel_id', 'tahun_akademik_id', 'semester_id',
+        'siswa_id', 'kelas_id','guru_id', 'mapel_id', 'tahun_akademik_id', 'semester_id',
         'proses1', 'proses2', 'uts', 'proses3', 'proses4', 'uas', 'catatan'
     ];
 

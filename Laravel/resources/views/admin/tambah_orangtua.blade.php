@@ -11,7 +11,15 @@
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
-
+     @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $err)
+                    <li>{{ $err }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     <form action="{{ route('admin.simpan_orangtua') }}" method="POST">
       @csrf
 
@@ -53,6 +61,15 @@
           @endforeach
         </select>
       </div>
+      <div class="form-group mb-2">
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" class="form-control" required placeholder="Masukkan Email">
+
+<div class="form-group mb-2">
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password" class="form-control" required placeholder="Masukkan Password">
+</div>
+
 
       <div class="form-buttons mt-3" style="display: flex; justify-content: flex-end; gap: 10px;">
           <a href="{{ route('admin.data_orangtua') }}" class="btn btn-danger">Batal</a>

@@ -6,6 +6,18 @@
 <div class="content">
   <h2>Tambah Data Guru</h2>
   <div class="card p-4 shadow-sm">
+        @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+     @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $err)
+                    <li>{{ $err }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     <form action="{{ route('admin.simpan_guru') }}" method="POST">
       @csrf
 
@@ -57,6 +69,16 @@
           <option value="female">Perempuan</option>
         </select>
       </div>
+      <div class="form-group mb-2">
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" class="form-control" required placeholder="Masukkan Email">
+</div>
+
+<div class="form-group mb-2">
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password" class="form-control" required placeholder="Masukkan Password">
+</div>
+
 
       <div class="form-buttons mt-3 d-flex justify-content-end gap-2">
         <a href="{{ route('admin.data_guru') }}" class="btn btn-danger">Batal</a>

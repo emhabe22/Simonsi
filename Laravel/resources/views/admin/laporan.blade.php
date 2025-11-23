@@ -9,150 +9,149 @@
   <div class="card shadow p-4 mb-3">
     <p><b>LAPORAN AKADEMIK SISWA</b></p>
 
-    <form id="formLaporan">
+    {{-- Form pencarian laporan --}}
+    <form action="{{ route('admin.laporan') }}" method="GET">
+      @csrf
       <div style="display:flex; flex-direction:column; gap:12px; width:100%;">
 
+        {{-- Pilih Kelas --}}
         <div style="display:flex; align-items:center; gap:12px;">
-          <label for="kelas" style="min-width:140px;">Pilih Kelas :</label>
-          <select class="select" id="kelas" name="kelas">
+          <label style="min-width:140px;">Pilih Kelas :</label>
+          <select class="select" name="kelas_id" id="kelas_id">
             <option value="">-- Pilih Kelas --</option>
-            <option value="1A">1A</option>
-            <option value="2X">2X</option>
+            @foreach($kelas as $k)
+              <option value="{{ $k->id }}" {{ request('kelas_id') == $k->id ? 'selected' : '' }}>
+                {{ $k->class . ' ' . $k->subclass }}
+
+              </option>
+            @endforeach
           </select>
         </div>
 
+        {{-- Pilih Siswa --}}
         <div style="display:flex; align-items:center; gap:12px;">
-          <label for="siswa" style="min-width:140px;">Nama Siswa :</label>
-          <select class="select" id="siswa" name="siswa">
-            <option value="">-- Pilih siswa --</option>
+          <label style="min-width:140px;">Nama Siswa :</label>
+          <select class="select" name="siswa_id" id="siswa_id">
+            <option value="">-- Pilih Siswa --</option>
           </select>
         </div>
 
+        {{-- Pilih Tahun Akademik --}}
         <div style="display:flex; align-items:center; gap:12px;">
-          <label for="tahun" style="min-width:140px;">Tahun Akademik :</label>
-          <select class="select" id="tahun" name="tahun">
+          <label style="min-width:140px;">Tahun Akademik :</label>
+          <select class="select" name="tahun_akademik_id">
             <option value="">-- Pilih Tahun Akademik --</option>
-            <option value="2025">2025</option>
-            <option value="2026">2026</option>
+            @foreach($tahunAkademik as $t)
+              <option value="{{ $t->id }}" {{ request('tahun_akademik_id') == $t->id ? 'selected' : '' }}>
+                {{ $t->id_tahun }}
+              </option>
+            @endforeach
           </select>
         </div>
 
+        {{-- Pilih Semester --}}
         <div style="display:flex; align-items:center; gap:12px;">
-          <label for="semester" style="min-width:140px;">Semester :</label>
-          <select class="select" id="semester" name="semester">
+          <label style="min-width:140px;">Semester :</label>
+          <select class="select" name="semester_id">
             <option value="">-- Pilih Semester --</option>
-            <option value="ganjil">Ganjil</option>
-            <option value="genap">Genap</option>
+            @foreach($semester as $smt)
+              <option value="{{ $smt->id }}" {{ request('semester_id') == $smt->id ? 'selected' : '' }}>
+                {{ ucfirst($smt->semester) }}
+              </option>
+            @endforeach
           </select>
         </div>
 
+        {{-- Tombol --}}
         <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:12px;">
-          <a href="#" class="btn btn-danger">Kembali</a>
-          <button type="submit" class="btn btn-success">Cetak Laporan</button>
+          <a href="{{ route('admin.laporan') }}" class="btn btn-danger">Reset</a>
+          <button type="submit" class="btn btn-success">Tampilkan Laporan</button>
         </div>
 
       </div>
     </form>
   </div>
 
-  <!-- Tabel nilai (disembunyikan dulu dengan d-none) -->
-  <div id="tabelNilai" class="card shadow p-4 d-none" style="margin-top:20px;">
+  {{-- Jika ada data nilai --}}
+  @if($nilaiData->count() > 0)
+  <div class="card shadow p-4" style="margin-top:20px;">
     <h2>Hasil Nilai</h2>
-    <p id="infoSiswa"></p>
+    <p>
+      <b>Nama: </b>{{ $siswa->name ?? '-' }} |
+      <b>Kelas: </b>{{ $siswa->kelas->class ?? '-' }} {{ $siswa->kelas->subclass ?? '' }}
+
+    </p>
+
     <table class="table table-bordered table-striped" style="width:100%;">
       <thead>
         <tr>
           <th>No</th>
           <th>Nama Mata Pelajaran</th>
-          <th>Nilai</th>
+          <th>Nilai Rata-rata</th>
         </tr>
       </thead>
-      <tbody id="tbodyNilai"></tbody>
+      <tbody>
+        @foreach($nilaiData as $i => $n)
+          @php
+            $rata = ($n->proses1 + $n->proses2 + $n->uts + $n->proses3 + $n->proses4 + $n->uas) / 6;
+          @endphp
+          <tr>
+            <td>{{ $i+1 }}</td>
+            <td>{{ $n->mapel->name }}</td>
+            <td>{{ number_format($rata, 2) }}</td>
+          </tr>
+        @endforeach
+      </tbody>
     </table>
-    <p><b>Catatan : Sukses</b></p>
-  </div>
+  <div style="text-align: right; margin-top: 16px;">
+    <a href="{{ route('admin.laporan.pdf', request()->all()) }}" target="_blank" class="btn btn-primary">
+        Cetak PDF
+    </a>
 </div>
+  
+  </div>
+  @endif
 
-{{-- JavaScript --}}
-<script>
-  const dataSiswa = {
-    "1A": ["Budi", "Siti", "Andi", "Dewi"],
-    "2X": ["Rina", "Agus", "Tono", "Lia"]
-  };
 
-  const dataNilai = {
-    "1A": {
-      "Budi": { "Matematika": 88, "IPA": 90, "Bahasa Indonesia": 85 },
-      "Siti": { "Matematika": 92, "IPA": 93, "Bahasa Indonesia": 91 },
-      "Andi": { "Matematika": 80, "IPA": 84, "Bahasa Indonesia": 79 },
-      "Dewi": { "Matematika": 95, "IPA": 94, "Bahasa Indonesia": 96 }
-    },
-    "2X": {
-      "Rina": { "Matematika": 89, "IPA": 88, "Bahasa Indonesia": 87 },
-      "Agus": { "Matematika": 91, "IPA": 90, "Bahasa Indonesia": 92 },
-      "Tono": { "Matematika": 85, "IPA": 86, "Bahasa Indonesia": 84 },
-      "Lia": { "Matematika": 93, "IPA": 95, "Bahasa Indonesia": 94 }
-    }
-  };
-
-  const kelasSelect = document.getElementById("kelas");
-  const siswaSelect = document.getElementById("siswa");
-  const formLaporan = document.getElementById("formLaporan");
-  const tabelNilaiDiv = document.getElementById("tabelNilai");
-  const tbodyNilai = document.getElementById("tbodyNilai");
-  const infoSiswa = document.getElementById("infoSiswa");
-
-  // Saat kelas berubah, isi daftar siswa
-  kelasSelect.addEventListener("change", function () {
-    const kelasDipilih = this.value;
-    siswaSelect.innerHTML = "<option value=''>-- Pilih siswa --</option>";
-    if (dataSiswa[kelasDipilih]) {
-      dataSiswa[kelasDipilih].forEach(nama => {
-        const option = document.createElement("option");
-        option.value = nama;
-        option.textContent = nama;
-        siswaSelect.appendChild(option);
-      });
-    }
-  });
-
-  // Saat tombol Cetak Laporan diklik
-  formLaporan.addEventListener("submit", function (e) {
-    e.preventDefault();
-
-    const kelas = kelasSelect.value;
-    const siswa = siswaSelect.value;
-    const tahun = document.getElementById("tahun").value;
-    const semester = document.getElementById("semester").value;
-
-    if (!kelas || !siswa || !tahun || !semester) {
-      alert("Harap lengkapi semua pilihan sebelum mencetak laporan!");
-      return;
-    }
-
-    const nilaiSiswa = dataNilai[kelas]?.[siswa];
-    if (!nilaiSiswa) {
-      alert("Data nilai tidak ditemukan untuk siswa ini.");
-      return;
-    }
-
-    // Isi info siswa dan tabel nilai
-    infoSiswa.textContent = `Nama: ${siswa} | Kelas: ${kelas} | Tahun: ${tahun} | Semester: ${semester}`;
-    tbodyNilai.innerHTML = "";
-
-    let i = 1;
-    for (const mapel in nilaiSiswa) {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${i++}</td>
-        <td>${mapel}</td>
-        <td>${nilaiSiswa[mapel]}</td>
-      `;
-      tbodyNilai.appendChild(tr);
-    }
-
-    // Tampilkan tabel nilai
-    tabelNilaiDiv.classList.remove("d-none");
-  });
-</script>
+</div>
 @endsection
+
+@push('scripts')
+<script>
+  // Semua data siswa dikirim dari controller
+  const semuaSiswa = @json($semuaSiswa);
+
+  const kelasSelect = document.getElementById('kelas_id');
+  const siswaSelect = document.getElementById('siswa_id');
+
+  // Event saat kelas dipilih
+  kelasSelect.addEventListener('change', function() {
+      const kelasId = this.value;
+      siswaSelect.innerHTML = '<option value="">-- Pilih Siswa --</option>'; // reset
+
+      if (kelasId) {
+          const siswaKelas = semuaSiswa.filter(s => s.kelas_id == kelasId);
+          siswaKelas.forEach(s => {
+              const option = document.createElement('option');
+              option.value = s.id;
+              option.textContent = s.name;
+              siswaSelect.appendChild(option);
+          });
+      }
+  });
+
+  // Saat halaman reload, tampilkan siswa otomatis kalau kelas sudah dipilih
+  @if(request('kelas_id'))
+      const kelasAwal = "{{ request('kelas_id') }}";
+      const siswaAwal = "{{ request('siswa_id') }}";
+      const siswaKelas = semuaSiswa.filter(s => s.kelas_id == kelasAwal);
+      siswaKelas.forEach(s => {
+          const option = document.createElement('option');
+          option.value = s.id;
+          option.textContent = s.name;
+          if (s.id == siswaAwal) option.selected = true;
+          siswaSelect.appendChild(option);
+      });
+  @endif
+</script>
+@endpush

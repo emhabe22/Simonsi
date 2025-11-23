@@ -36,12 +36,24 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('password'), // ganti sesuai kebutuhan
             'role' => 'guru',
         ]);
-
+        $semesters = [
+            [
+                'semester' => 'Ganjil',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'semester' => 'Genap',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ];
+        DB::table('semesters')->insert($semesters);
         for ($class = 1; $class <= 6; $class++) {
             foreach (['A', 'B', 'C', 'D', 'E'] as $subClass) {
               Kelas::create([
                     'class' => $class,
-                    'sub-class' => $subClass,
+                    'subclass' => $subClass,
                 ]);
             }
         }

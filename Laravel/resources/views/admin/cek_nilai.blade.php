@@ -3,25 +3,6 @@
 
 @section('content')
 <style>
-  /* --- AREA UTAMA HALAMAN CEK NILAI --- */
-  .cek-nilai {
-    max-width: 100%;
-    margin: 40px auto;
-    font-family: 'Poppins', sans-serif;
-    color: #222;
-  }
-
-  .cek-nilai h1 {
-    font-size: 28px;
-    font-weight: 700;
-    margin-bottom: 24px;
-  }
-
-  /* --- KARTU UNTUK BIODATA DAN TABEL --- */
-
-
-
-  /* --- TABEL NILAI --- */
   .cek-nilai table {
     width: 100%;
     border-collapse: collapse;
@@ -41,20 +22,50 @@
     background-color: #f8f8f8;
     font-weight: 600;
   }
+
+  .card-footer-right {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+  }
 </style>
 
 <div class="cek-nilai">
-  <h1>Cek Nilai Siswa</h1>
+  <h2 class="page-title">Cek Nilai Siswa</h2>
 
   <!-- Biodata Siswa -->
-  <div class="card">
-    <p><strong>Nama Siswa :</strong> Michael Joko Nurcipto</p>
-    <p><strong>Semester :</strong> Ganjil</p>
-    <p><strong>Tahun Akademik :</strong> 2024/2025</p>
+  <div class="card p-3">
+
+    <p><strong>Nama Siswa :</strong> <strong>{{ $siswa->name }}</strong></p>
+
+    <p><strong>Kelas :</strong>
+      <strong>{{ $siswa->kelas->class }}{{ $siswa->kelas->subclass }}</strong>
+    </p>
+
+    @if($nilai->first())
+      <p><strong>Semester :</strong>
+        <strong>{{ ucfirst($nilai->first()->semester->semester) }}</strong>
+      </p>
+
+      <p><strong>Tahun Akademik :</strong>
+        <strong>{{ $nilai->first()->tahunAkademik->id_tahun }}</strong>
+      </p>
+    @else
+      <p><strong>Semester :</strong> <strong>-</strong></p>
+      <p><strong>Tahun Akademik :</strong> <strong>-</strong></p>
+    @endif
+
+    <!-- Tombol kembali di kanan bawah card -->
+    <div class="card-footer-right">
+      <a href="{{ route('admin.nilai') }}" class="btn btn-danger">
+        Kembali
+      </a>
+    </div>
+
   </div>
 
   <!-- Tabel Nilai -->
-  <div class="card">
+  <div class="card mt-4">
     <table>
       <thead>
         <tr>
@@ -63,24 +74,24 @@
           <th>Nilai</th>
         </tr>
       </thead>
+
       <tbody>
+        @forelse($nilai as $i => $n)
         <tr>
-          <td>1</td>
-          <td>Matematika</td>
-          <td>87</td>
+          <td>{{ $i + 1 }}</td>
+          <td>{{ $n->mapel->name }}</td>
+          <td>{{ round(($n->proses1 + $n->proses2 + $n->uts + $n->proses3 + $n->proses4 + $n->uas) / 6) }}</td>
         </tr>
+        @empty
         <tr>
-          <td>2</td>
-          <td>Bahasa Indonesia</td>
-          <td>90</td>
+          <td colspan="3" class="text-center text-danger py-3">
+            Belum ada nilai untuk siswa ini.
+          </td>
         </tr>
-        <tr>
-          <td>3</td>
-          <td>IPA</td>
-          <td>85</td>
-        </tr>
+        @endforelse
       </tbody>
     </table>
   </div>
+
 </div>
 @endsection

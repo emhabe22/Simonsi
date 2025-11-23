@@ -64,7 +64,7 @@
 
         {{-- Tombol --}}
         <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:12px;">
-          <a href="{{ route('guru.dashboard') }}" class="btn btn-danger">Kembali</a>
+          <a href="{{ route('guru.laporan') }}" class="btn btn-danger">Reset</a>
           <button type="submit" class="btn btn-success">Tampilkan Laporan</button>
         </div>
 
@@ -103,6 +103,11 @@
         @endforeach
       </tbody>
     </table>
+      <div style="text-align: right; margin-top: 16px;">
+    <a href="{{ route('guru.laporan.pdf', request()->all()) }}" target="_blank" class="btn btn-primary">
+        Cetak PDF
+    </a>
+</div>
 
   
   </div>
