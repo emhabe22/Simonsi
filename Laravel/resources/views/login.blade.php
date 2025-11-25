@@ -19,20 +19,20 @@
     <div class="form-section">
         <h1>Masuk</h1>
 
-        {{-- Notifikasi error login custom --}}
-        @if ($errors->has('loginError'))
+        {{-- Notifikasi error login (email/password salah) --}}
+        @if ($errors->has('email'))
             <div class="alert-error">
-                {{ $errors->first('loginError') }}
+                {{ $errors->first('email') }}
             </div>
         @endif
 
-        {{-- Notifikasi error input kosong/validasi --}}
-        @if ($errors->has('email') || $errors->has('password'))
+        {{-- Notifikasi error validasi password kosong --}}
+        @if ($errors->has('password') && !$errors->has('email'))
             <div class="alert-error">
-
-                Mohon lengkapi email dan password dengan benar.
+                {{ $errors->first('password') }}
             </div>
         @endif
+
 
         <form action="{{ route('login.process') }}" method="POST">
             @csrf
@@ -48,9 +48,6 @@
                     class="@error('email') input-error @enderror"
                     required
                 >
-                @error('email')
-                    <span class="field-error">{{ $message }}</span>
-                @enderror
             </div>
 
             <div class="form-group">
@@ -63,9 +60,6 @@
                     class="@error('password') input-error @enderror"
                     required
                 >
-                @error('password')
-                    <span class="field-error">{{ $message }}</span>
-                @enderror
             </div>
 
             <button type="submit" class="login-btn">Login</button>

@@ -14,30 +14,32 @@ class AuthController extends Controller
         return view('login');
     }
 
-    public function process(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+   public function process(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
 
-        // Coba login user
-        if (!Auth::attempt($request->only('email', 'password'))) {
-            return back()->withErrors(['loginError' => 'Email atau password salah']);
-        }
-
-        // Regenerate session untuk security
-        $request->session()->regenerate();
-        $user = Auth::user();
-
-        // Redirect berdasarkan role
-        return match ($user->role) {
-            'admin' => redirect()->route('admin.dashboard'),
-            'guru'  => redirect()->route('guru.dashboard'),
-            'ortu'  => redirect()->route('ortu.dashboard'),
-            default => redirect()->route('login'),
-        };
+    // Coba login user
+    if (!Auth::attempt($request->only('email', 'password'))) {
+        return back()->withErrors([
+            'email' => 'Email atau password salah'
+        ])->withInput($request->only('email'));
     }
+
+    // Regenerate session untuk security
+    $request->session()->regenerate();
+    $user = Auth::user();
+
+    // Redirect berdasarkan role
+    return match ($user->role) {
+        'admin' => redirect()->route('admin.dashboard'),
+        'guru'  => redirect()->route('guru.dashboard'),
+        'ortu'  => redirect()->route('ortu.dashboard'),
+        default => redirect()->route('login'),
+    };
+}
 
     public function logout(Request $request)
     {
