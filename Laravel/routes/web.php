@@ -17,7 +17,7 @@ Route::post('/login', [AuthController::class, 'process'])->name('login.process')
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // ======================= ADMIN ==========================
-Route::prefix('admin')->middleware(['auth','role:admin'])->group(function (){
+Route::prefix('admin')->middleware(['auth:sanctum','role:admin'])->group(function (){
 
     // Dashboard & Menu Utama
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
@@ -85,7 +85,7 @@ Route::prefix('admin')->middleware(['auth','role:admin'])->group(function (){
 });
 
 // ======================= GURU ==========================
-Route::prefix('guru')->middleware(['auth','role:guru'])->group(function () {
+Route::prefix('guru')->middleware(['auth:sanctum','role:guru'])->group(function () {
     Route::get('/dashboard', [GuruController::class, 'dashboard'])->name('guru.dashboard');
     Route::get('/absensi', [GuruController::class, 'absensi'])->name('guru.absensi');
     Route::get('/nilai', [GuruController::class, 'nilai'])->name('guru.nilai');
@@ -105,7 +105,7 @@ Route::post('/simpan_nilai', [GuruController::class, 'simpan_nilai'])
 });
 
 // ======================= ORANG TUA ==========================
-Route::prefix('ortu')->middleware(['auth','role:ortu'])->group(function () {
+Route::prefix('ortu')->middleware(['auth:sanctum','role:ortu'])->group(function () {
     Route::get('/dashboard', [OrtuController::class, 'dashboard'])->name('ortu.dashboard');
     Route::get('/absensi', [OrtuController::class, 'absensi'])->name('ortu.absensi');
     Route::get('/nilai', [OrtuController::class, 'nilai'])->name('ortu.nilai');

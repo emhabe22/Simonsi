@@ -21,35 +21,33 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        // Coba login user
+        if (!Auth::attempt($request->only('email', 'password'))) {
             return back()->withErrors(['loginError' => 'Email atau password salah']);
         }
 
-        // Login menggunakan web guard (Sanctum akan handle session)
-        Auth::login($user);
+        // Regenerate session untuk security
         $request->session()->regenerate();
+        $user = Auth::user();
 
         // Redirect berdasarkan role
         return match ($user->role) {
             'admin' => redirect()->route('admin.dashboard'),
-            'guru' => redirect()->route('guru.dashboard'),
-            'ortu' => redirect()->route('ortu.dashboard'),
+            'guru'  => redirect()->route('guru.dashboard'),
+            'ortu'  => redirect()->route('ortu.dashboard'),
+            default => redirect()->route('login'),
         };
     }
 
- public function logout(Request $request)
+    public function logout(Request $request)
     {
-        // Logout user dari Sanctum session
+        // Logout Sanctum session
         Auth::logout();
-        
-        // Hapus session
+
+        // Hapus semua session
         $request->session()->invalidate();
-        
-        // Regenerate CSRF token untuk keamanan
         $request->session()->regenerateToken();
-        
+
         return redirect()->route('login')->with('success', 'Anda berhasil logout');
     }
 }
