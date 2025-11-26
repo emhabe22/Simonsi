@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\OrtuController;
 use App\Http\Controllers\AuthController;
+
 // Swagger UI Route
 Route::get('/api/docs', function () {
     return view('l5-swagger::index');
