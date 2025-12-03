@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Absensi;
 use App\Models\Nilai;
 use App\Models\Siswa;
+use Illuminate\Container\Attributes\Auth;
 
 class GuruController extends Controller
 {
@@ -20,7 +21,7 @@ class GuruController extends Controller
      */
     public function dashboard(Request $request)
     {
-        $guru = $request->user;  // dari middleware role
+        $guru = $request->user;
 
         $data = [
             'nama_guru'      => $guru->name ?? 'Guru Tanpa Nama',

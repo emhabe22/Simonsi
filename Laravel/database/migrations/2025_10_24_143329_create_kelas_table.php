@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('kelas', function (Blueprint $table) {
             $table->id();
             $table->integer('class');
-            $table->enum('sub-class', ['A', 'B', 'C', 'D', 'E']);
+            $table->enum('subclass', ['A', 'B', 'C', 'D', 'E']);
             $table->timestamps();
         });
     }

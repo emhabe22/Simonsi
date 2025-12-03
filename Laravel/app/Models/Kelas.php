@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Kelas extends Model
 {
-    protected $guarded = [];
+   protected $fillable = ['class', 'sub-class'];
+
     
 
     public function siswas () {

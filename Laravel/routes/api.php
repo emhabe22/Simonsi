@@ -7,53 +7,44 @@ use App\Http\Controllers\API\AdminController;
 use App\Http\Controllers\API\GuruController;
 use App\Http\Controllers\API\OrtuController;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-*/
-//Auth Routes
+// ==================== AUTH ====================
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout']);
-// ==================== ADMIN ROUTES ====================
-//GET Routes
-Route::middleware(['role:admin'])->get('/admin/dashboard', [AdminController::class, 'dashboard']);
-Route::middleware(['role:admin'])->get('/admin/absensi', [AdminController::class, 'absensi']);
-Route::middleware(['role:admin'])->get('/admin/nilai', [AdminController::class, 'nilai']);
-Route::middleware(['role:admin'])->get('/admin/getNilai', [AdminController::class, 'getNilai']);
-Route::middleware(['role:admin'])->get('/admin/laporan', [AdminController::class, 'laporan']);
-Route::middleware(['role:admin'])->get('/admin/laporan', [AdminController::class, 'laporan']);
-Route::middleware(['role:admin'])->get('/admin/guru', [AdminController::class, 'getGuru']);
-Route::middleware(['role:admin'])->get('/admin/siswa', [AdminController::class, 'getSiswa']);
-Route::middleware(['role:admin'])->get('/admin/ortu', [AdminController::class, 'getOrtu']);
-// POST Routes 
-Route::middleware(['role:admin'])->post('/admin/addGuru', [AdminController::class, 'addGuru']);
-Route::middleware(['role:admin'])->post('/admin/addSiswa', [AdminController::class, 'addSiswa']);
-Route::middleware(['role:admin'])->post('/admin/addOrtu', [AdminController::class, 'addOrtu']);
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
-// ==================== GURU ROUTES ====================
-//GET Routes
-Route::get('/guru/dashboard', [GuruController::class, 'dashboard']);
-Route::get('/guru/siswa-nilai', [GuruController::class, 'getSiswaUntukNilai']);
-Route::get('/guru/nilai-siswa/{id}', [GuruController::class, 'getNilaiSiswa']);
-Route::get('/guru/laporan-akademik', [GuruController::class, 'laporanAkademik']);
-// PUT Routes
-Route::put('/guru/absensi/{id}', [GuruController::class, 'updateAbsensi']);
-// POST Routes
-Route::post('/guru/nilai', [GuruController::class, 'inputNilai']);
+// ==================== ADMIN ====================
+Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
 
-// ==================== ORTU ROUTES ====================
-Route::get('/orangtua/dashboard', [OrtuController::class, 'dashboard']);
-Route::get('/orangtua/laporan', [OrtuController::class, 'laporanAkademik']);
-Route::get('/orangtua/nilai-anak', [OrtuController::class, 'getNilaiAnak']);
-Route::middleware(['role:admin'])
-    ->get('/admin/dashboard', [AdminController::class, 'dashboard']);
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
+    Route::get('/admin/absensi', [AdminController::class, 'absensi']);
+    Route::get('/admin/nilai', [AdminController::class, 'nilai']);
+    Route::get('/admin/getNilai', [AdminController::class, 'getNilai']);
+    Route::get('/admin/laporan', [AdminController::class, 'laporan']);
+    Route::get('/admin/guru', [AdminController::class, 'getGuru']);
+    Route::get('/admin/siswa', [AdminController::class, 'getSiswa']);
+    Route::get('/admin/ortu', [AdminController::class, 'getOrtu']);
 
-Route::middleware(['role:guru'])
-    ->get('/guru/dashboard', [GuruController::class, 'dashboard']);
+    Route::post('/admin/addGuru', [AdminController::class, 'addGuru']);
+    Route::post('/admin/addSiswa', [AdminController::class, 'addSiswa']);
+    Route::post('/admin/addOrtu', [AdminController::class, 'addOrtu']);
+});
 
-Route::middleware(['role:ortu'])
-    ->get('/orangtua/dashboard', [OrtuController::class, 'dashboard']);
+// ==================== GURU ====================
+Route::middleware(['auth:sanctum', 'role:guru'])->group(function () {
 
+    Route::get('/guru/dashboard', [GuruController::class, 'dashboard']);
+    Route::get('/guru/siswa-nilai', [GuruController::class, 'getSiswaUntukNilai']);
+    Route::get('/guru/nilai-siswa/{id}', [GuruController::class, 'getNilaiSiswa']);
+    Route::get('/guru/laporan-akademik', [GuruController::class, 'laporanAkademik']);
+
+    Route::put('/guru/absensi/{id}', [GuruController::class, 'updateAbsensi']);
+
+    Route::post('/guru/nilai', [GuruController::class, 'inputNilai']);
+});
+
+// ==================== ORTU ====================
+Route::middleware(['auth:sanctum', 'role:ortu'])->group(function () {
+    Route::get('/orangtua/dashboard', [OrtuController::class, 'dashboard']);
+    Route::get('/orangtua/laporan', [OrtuController::class, 'laporanAkademik']);
+    Route::get('/orangtua/nilai-anak', [OrtuController::class, 'getNilaiAnak']);
+});
 

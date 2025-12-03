@@ -7,6 +7,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Kelas;
 use App\Models\Mapel;
+use Illuminate\Support\Facades\DB;
 class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;

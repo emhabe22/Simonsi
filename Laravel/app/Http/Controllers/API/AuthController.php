@@ -48,7 +48,8 @@ class AuthController extends Controller
         }
 
         // Token base64 seperti middleware RoleMiddleware
-        $token = base64_encode($user->email . '|' . now());
+       $token = $user->createToken('token_login')->plainTextToken;
+
 
         // ========= ROLE-BASED EXTRA DATA =========
         $extraData = [];
@@ -89,7 +90,6 @@ class AuthController extends Controller
             'extra' => $extraData,
         ], 200);
     }
-
 
     /**
      * @OA\Post(
